@@ -1,11 +1,11 @@
-# #logs
-# *.logs
-# #node moodules
-# frontend/node_modules/
-# backend/node_modules/
+ #logs
+ *.logs
+ #node moodules
+ frontend/node_modules/
+ backend/node_modules/
 
-# #Environment variables
-# frontend/.env
-# backend/.env
+ #Environment variables
+ frontend/.env
+ backend/.env
 
-# .Ds_Store
+ .DS_Store
