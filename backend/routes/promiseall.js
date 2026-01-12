@@ -41,6 +41,8 @@ async function uploadMultiple(images, folderName = "products") {
     console.error("❌ Erreur upload :", error.message);
   }
 }
+const filePath = path.join(baseDir, "Magnifique porte feuille marbré .jpeg");
+console.log("➡️ Chemin du fichier:", filePath, "Existe:", fs.existsSync(filePath));
 
 // Exemple d’appel avec path.join
 const baseDir = path.join(__dirname, "backend/imagecloudinary");
