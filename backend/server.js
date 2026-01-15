@@ -23,15 +23,12 @@ const adminOrderRoutes = require("./routes/adminOrderRoutes"); // gestion des co
 // Initialisation de l'app
 const app = express();
 require("dotenv").config(); 
-console.log("✅ JWT_SECRET:", process.env.JWT_SECRET || "non défini");
-console.log("✅ JWT_REFRESH_SECRET:", process.env.JWT_REFRESH_SECRET || "non défini");
-
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ 
-  origin: "http://localhost:5173",
+  
   credentials: true,
   allowedHeaders: ["Authorization", "Content-Type"],
 }
