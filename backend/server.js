@@ -13,6 +13,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const subscribeRoutes = require("./routes/subscribeRoutes");
 const orangeMoneyRoutes = require("./routes/orangeMoneyRoutes");
+const orangeMoneyvalidationRoutes = require("./routes/orangeMoneyRoutes");
 
 // Routes Admin
 const adminUserRoutes = require("./routes/adminRoutes"); // gestion des utilisateurs admin
@@ -58,6 +59,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/subscribe", subscribeRoutes);
 app.use("/api/orange-money", orangeMoneyRoutes);
+app.use("/api/initiate-payment", orangeMoneyvalidationRoutes)
 
 // API Routes Admin
 app.use("/api/admin/users", adminUserRoutes);

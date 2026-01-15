@@ -13,24 +13,24 @@ const Filtersidebar = () => {
         material: [],
         brand: [],
         minPrice: 0,
-        maxPrice: 100,
+        maxPrice: 30000,
     })
 
-    const [priceRange, setPriceRange] = useState([0, 100]);
+    const [priceRange, setPriceRange] = useState([0, 30000]);
 
     const categories = ["Top Wear", "Bottom Wear"];
 
     const colors = [
         "Red",
-        "Blue",
+        "Browm",
         "Black",
-        "Green",
+        "Light browm",
         "Yellow",
         "Gray",
         "white",
         "Pink",
         "Beige",
-        "Navy",
+        "Green",
     ];
     const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
@@ -43,6 +43,7 @@ const Filtersidebar = () => {
         "Linen",
         "Viscose",
         "Fleece",
+        "Cuir",
     ];
     const brands = [
         "Urban Threads",
@@ -51,6 +52,7 @@ const Filtersidebar = () => {
         "Beach Breeze",
         "Fashionista",
         "ChicStyle",
+        "Jeep",
     ]
     const genders = ["Men", "Women"];
 
@@ -228,12 +230,12 @@ const Filtersidebar = () => {
              name="priceRange" 
              value={priceRange[1]}
              onChange={handlePriceChange}
-             min={0} max={100}
+             min={0} max={30000}
              className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer" />
         </div>
         <div className="flex justify-between text-gray-600 mt-2">
-            <span>$0</span>
-            <span>${priceRange[1]}</span>
+            <span>0 FCFA</span>
+            <span>{priceRange[1]} FCFA</span>
         </div>
 
     </div>

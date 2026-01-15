@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import register from "../assets/register.webp"
+import register from "../assets/image9.jpeg"
 import { registerUser } from '../../slice/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { mergeCart } from '../../slice/cartSlice';

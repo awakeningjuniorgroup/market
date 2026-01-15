@@ -4,12 +4,12 @@ import Navbar from "./Navbar";
 
 const Header = () => {
   return (
-    <header className="border-b border-gray-200">
-      {/* topbar  */}
+    <header className=" top-0 left-0 w-full z-50 bg-white border-b border-gray-200">
+      {/* topbar */}
       <Topbar />
-      {/* navbar  */}
+      {/* navbar */}
       <Navbar />
-      {/* cart drawer  */}
+      {/* cart drawer */}
     </header>
   );
 };

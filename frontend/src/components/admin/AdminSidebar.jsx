@@ -18,7 +18,7 @@ const AdminSidebar = () => {
     <div className="p-6 fixed">
       <div className="mb-6">
         <Link to="/admin" className="text-2xl font-meduim">
-            Rabbit
+            Kam's market
         </Link>
       </div>
       <h2 className="text-xl font-meduim mb-6 text-center">Admin Dasboard</h2>

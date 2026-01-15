@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import featured from "../../assets/register.webp";
+import featured from "../../assets/image19.jpeg";
 
 const FeaturedCollection = () => {
   return (
