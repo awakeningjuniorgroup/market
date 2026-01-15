@@ -9,6 +9,7 @@ const GenderCollectionSection = () => {
     <div className="container mx-auto flex flex-col md:flex-row gap-8">
         {/* Women's collection  */}
         <div className="relative flex-1">
+          <h2 className="text-3xl text-center font-bold mb-4">Gender collection</h2>
             <img src= {womensCollectionimage}
              alt="women's collection" 
              className='w-full h-[700px] object-cover'
