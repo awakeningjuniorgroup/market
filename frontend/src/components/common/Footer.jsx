@@ -113,7 +113,7 @@ const Footer = () => {
         </div>
         {/* footer bottom  */}
         <div className="container mx-auto mt-12 px-4 lg:px-0 border-t border-gray-200 pt-6">
-            <p className="text-gary-500 text-sm tracking-tighter text-center"> &copy 2025, compileTab. All arights Reserved by Awakening Group </p>
+            <p className="text-gary-500 text-sm tracking-tighter text-center"> {'\u00a9'} 2026, compileTab. All arights Reserved by Awakening Group </p>
         </div>
 
    </footer>

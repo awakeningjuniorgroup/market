@@ -4,20 +4,20 @@ const jwt = require("jsonwebtoken");
 const { protect } = require("../middleware/authMiddleware");
 const router = express.Router();
 
-// Helper pour générer les tokens
-const generateAccessToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" }); // court
-};
+// Helpers
+const generateAccessToken = (payload) =>
+  jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
 
-const generateRefreshToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" }); // long
-};
+const generateRefreshToken = (payload) =>
+  jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
 
-// @route POST /api/users/register
-// @desc Register new user
-// @access Public
+// Register
 router.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    return res.status(400).json({ message: "All fields are required" });
+  }
 
   try {
     let userExists = await User.findOne({ email });
@@ -28,7 +28,6 @@ router.post("/register", async (req, res) => {
     const user = await User.create({ name, email, password });
 
     const payload = { id: user._id, role: user.role };
-
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
@@ -43,16 +42,18 @@ router.post("/register", async (req, res) => {
       refreshToken,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    console.error("Erreur register:", error.message);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
-// @route POST /api/users/login
-// @desc Authenticate user
-// @access Public
+// Login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password required" });
+  }
+
   try {
     let user = await User.findOne({ email });
     if (!user) return res.status(400).json({ message: "Invalid Credentials" });
@@ -61,7 +62,6 @@ router.post("/login", async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: "Invalid Credentials" });
 
     const payload = { id: user._id, role: user.role };
-
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
@@ -76,14 +76,12 @@ router.post("/login", async (req, res) => {
       refreshToken,
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    console.error("Erreur login:", error.message);
+    res.status(500).json({ message: "Server Error" });
   }
 });
 
-// @route POST /api/users/refresh
-// @desc Refresh access token
-// @access Public
+// Refresh
 router.post("/refresh", (req, res) => {
   const { refreshToken } = req.body;
   if (!refreshToken) {
@@ -92,19 +90,15 @@ router.post("/refresh", (req, res) => {
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-
     const newAccessToken = generateAccessToken({ id: decoded.id, role: decoded.role });
-
     res.json({ accessToken: newAccessToken });
   } catch (err) {
-    console.error(err);
+    console.error("Erreur refresh:", err.message);
     return res.status(403).json({ message: "Invalid refresh token" });
   }
 });
 
-// @route GET /api/users/profile
-// @desc Get logged-in user's profile
-// @access Private
+// Profile
 router.get("/profile", protect, async (req, res) => {
   res.json(req.user);
 });

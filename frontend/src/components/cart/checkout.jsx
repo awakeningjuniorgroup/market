@@ -37,9 +37,10 @@ const Checkout = () => {
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
     lastName: "",
-    address: "",
+    email: "",
+    quarter: "",
     city: "",
-    postalCode: "",
+    region: "",
     country: "",
     phone: "",
   });
@@ -101,11 +102,11 @@ const Checkout = () => {
                 type="submit"
                 className="w-full bg-black text-white py-3 rounded hover:bg-red-600"
               >
-                Valider mes coordonnées
+                check my details
               </button>
             ) : (
               <div>
-                <div className="text-lg mb-4">Choisissez votre moyen de paiement</div>
+                <div className="text-lg mb-4">Check payment</div>
                 <div className="flex flex-col gap-4">
                   <PayPalButton
                     amount={cart.totalPrice}
