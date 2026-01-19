@@ -17,7 +17,7 @@ export const fetchCart = createAsyncThunk(
   "cart/fetchCart",
   async ({ guestId }, { rejectWithValue }) => {
     try {
-      const response = await api.get("/api/cart", { params: { guestId } });
+      const response = await api.get("/api", { params: { guestId } });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Fetch cart failed" });
@@ -30,7 +30,7 @@ export const addToCart = createAsyncThunk(
   "cart/addToCart",
   async ({ productId, quantity, size, color, guestId }, { rejectWithValue }) => {
     try {
-      const response = await api.post("/api/cart", {
+      const response = await api.post("/api", {
         productId,
         quantity,
         guestId,
@@ -49,7 +49,7 @@ export const updateCartItemQuantity = createAsyncThunk(
   "cart/updateCartItemQuantity",
   async ({ productId, quantity, size, color, guestId }, { rejectWithValue }) => {
     try {
-      const response = await api.put("/api/cart", {
+      const response = await api.put("/api", {
         productId,
         quantity,
         size,
@@ -68,7 +68,7 @@ export const removeFromCart = createAsyncThunk(
   "cart/removeFromCart",
   async ({ productId, size, color, guestId }, { rejectWithValue }) => {
     try {
-      const response = await api.delete("/api/cart", {
+      const response = await api.delete("/api", {
         data: { productId, guestId, size, color },
       });
       return response.data;
