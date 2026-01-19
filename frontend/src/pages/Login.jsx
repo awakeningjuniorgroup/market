@@ -1,35 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import login from "../assets/image45.jpeg";
 import { loginUser } from '../../slice/authSlice';
-import { mergeCart } from '../../slice/cartSlice'; // 👈 à importer
 import { useDispatch, useSelector } from 'react-redux';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  const { user, guestId, loading } = useSelector((state) => state.auth);
-  const cart = useSelector((state) => state.cart);
-
-  // Get redirect parameter
-  const redirect = new URLSearchParams(location.search).get("redirect") || "/";
-  const isCheckoutRedirect = redirect.includes("checkout");
-
-  useEffect(() => {
-    if (user) {
-      if (cart?.products?.length > 0 && guestId) {
-        dispatch(mergeCart({ guestId, user })).then(() => {
-          navigate(isCheckoutRedirect ? "/checkout" : "/");
-        });
-      } else {
-        navigate(isCheckoutRedirect ? "/checkout" : "/");
-      }
-    }
-  }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
+  const { loading } = useSelector((state) => state.auth);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -48,7 +28,8 @@ const Login = () => {
           </div>
           <h2 className="text-2xl font-bold text-center mb-6">Hey there!</h2>
           <p className="text-center mb-6">
-            Enter your username and password to Login
+            Enter your username and password to Login  
+            <br /> (but you can also checkout as a guest).
           </p>
 
           <div className="mb-4">
@@ -83,7 +64,7 @@ const Login = () => {
           <p className="mt-6 text-center text-sm">
             Do not have an account?{" "}
             <Link
-              to={`/register?redirect=${encodeURIComponent(redirect)}`}
+              to="/register"
               className="text-blue-500"
             >
               Register
