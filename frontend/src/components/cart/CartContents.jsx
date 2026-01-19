@@ -6,7 +6,7 @@ import {
   updateCartItemQuantity,
 } from "../../../slice/cartSlice";
 
-const CartContents = ({ cart, userId, guestId }) => {
+const CartContents = ({ cart, guestId }) => {
   const dispatch = useDispatch();
 
   // Gérer l'ajout ou la soustraction de quantité
@@ -18,7 +18,6 @@ const CartContents = ({ cart, userId, guestId }) => {
           productId,
           quantity: newQuantity,
           guestId,
-          userId,
           size,
           color,
         })
@@ -28,7 +27,7 @@ const CartContents = ({ cart, userId, guestId }) => {
 
   // Supprimer un produit du panier
   const handleRemoveFromCart = (productId, size, color) => {
-    dispatch(removeFromCart({ productId, guestId, userId, size, color }));
+    dispatch(removeFromCart({ productId, guestId, size, color }));
   };
 
   return (
@@ -50,7 +49,6 @@ const CartContents = ({ cart, userId, guestId }) => {
                 <p className="text-sm text-gray-500">
                   size: {product.size} | color: {product.color}
                 </p>
-                <p className="text-sm text-gray-500">quantity: {product.quantity} </p>
                 <div className="flex items-center mt-2">
                   {/* Bouton + */}
                   <button
@@ -90,7 +88,7 @@ const CartContents = ({ cart, userId, guestId }) => {
             </div>
 
             <div>
-              <p> {product.price.toLocaleString()}  FCFA</p>
+              <p>{product.price.toLocaleString()} FCFA</p>
               <button
                 onClick={() =>
                   handleRemoveFromCart(
@@ -106,7 +104,7 @@ const CartContents = ({ cart, userId, guestId }) => {
           </div>
         ))
       ) : (
-        <p className="text-center text-gray-500"></p>
+        <p className="text-center text-gray-500">Your cart is empty</p>
       )}
     </div>
   );
