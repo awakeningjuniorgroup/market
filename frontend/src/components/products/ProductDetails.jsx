@@ -123,10 +123,10 @@ const ProductDetails = ({ productId }) => {
               {selectedProduct?.discountPrice ? (
                 <>
                   <p className="text-lg text-gray-600 mb-1 line-through">
-                    {selectedProduct?.price}   FCFA
+                    {selectedProduct?.discountPrice}   FCFA
                   </p>
                   <p className="text-xl text-red-600 mb-2">
-                    {selectedProduct?.discountPrice}   FCFA
+                    {selectedProduct?.price}   FCFA
                   </p>
                 </>
               ) : (
