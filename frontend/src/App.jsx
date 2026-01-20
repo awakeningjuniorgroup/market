@@ -18,6 +18,7 @@ import ProductManagement from "./components/admin/ProductManagement";
 import EditProductPage from "./components/admin/EditProductPage";
 import OrderManagement from "./components/admin/OrderManagement";
 import ProtectRoute from "./components/common/ProtectRoute";
+import Invoice from "./components/cart/Invoice";
 
 import { Provider } from "react-redux";
 import store from "../redux/store";
@@ -38,6 +39,7 @@ const App = () => {
                 <Route path="collections/:collection" element={<CollectionPage />} />
                 <Route path="product/:id" element={<ProductDetails />} />
                 <Route path="CheckOut" element={<Checkout />} />
+                <Route path="/invoice/:id" element={<Invoice />} />
                 <Route path="order-confirmation" element={<OrderConfirmationPage />} />
                 <Route path="order/:id" element={<OrderDetailsPage />}/>
                 <Route path="my-orders" element={<MyOrdersPage />} />
