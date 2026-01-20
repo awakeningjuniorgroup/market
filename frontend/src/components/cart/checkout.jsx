@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PayPalButton from "./PayPalButton";
 import { useDispatch, useSelector } from "react-redux";
-import { createCheckout, finalizeCheckout, initiateOrangeMoneyPayment } from "../../../slice/checkoutSlice";
+import {
+  createCheckout,
+  finalizeCheckout,
+  initiateOrangeMoneyPayment,
+} from "../../../slice/checkoutSlice";
 
 const OrangeMoneyButton = ({ amount }) => {
   const dispatch = useDispatch();
@@ -27,12 +31,31 @@ const OrangeMoneyButton = ({ amount }) => {
   );
 };
 
+// ✅ Nouveau bouton Paiement à la livraison
+const CashOnDeliveryButton = ({ checkoutId }) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleCOD = async () => {
+    await dispatch(finalizeCheckout(checkoutId)); // on finalise la commande sans paiement
+    navigate("/order-confirmation");
+  };
+
+  return (
+    <button
+      onClick={handleCOD}
+      className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700"
+    >
+      Paiement à la livraison
+    </button>
+  );
+};
+
 const Checkout = () => {
   const [checkoutId, setCheckoutId] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { cart, loading, error } = useSelector((state) => state.cart);
-  const { checkout } = useSelector((state) => state.checkout);
 
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
@@ -70,6 +93,25 @@ const Checkout = () => {
     await dispatch(finalizeCheckout(checkoutId));
     navigate("/order-confirmation");
   };
+  // ✅ Nouveau bouton Paiement à la livraison
+  const CashOnDeliveryButton = ({ checkoutId }) => {
+    const navigate = useNavigate();
+
+    const handleCOD = () => {
+      // Redirection vers la page facture
+      navigate(`/invoice/${checkoutId}`);
+    };
+
+    return (
+      <button
+        onClick={handleCOD}
+        className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700"
+      >
+        Paiement à la livraison
+      </button>
+    );
+  };
+
 
   if (loading) return <p>Loading cart…</p>;
   if (error) return <p>Error: {error}</p>;
@@ -102,11 +144,11 @@ const Checkout = () => {
                 type="submit"
                 className="w-full bg-black text-white py-3 rounded hover:bg-red-600"
               >
-                check my details
+                Vérifier mes informations
               </button>
             ) : (
               <div>
-                <div className="text-lg mb-4">Check payment</div>
+                <div className="text-lg mb-4">Choisissez votre mode de paiement</div>
                 <div className="flex flex-col gap-4">
                   <PayPalButton
                     amount={cart.totalPrice}
@@ -114,6 +156,8 @@ const Checkout = () => {
                     onError={() => alert("Paiement échoué. Réessayez.")}
                   />
                   <OrangeMoneyButton amount={cart.totalPrice} />
+                  {/* ✅ Bouton COD */}
+                  <CashOnDeliveryButton checkoutId={checkoutId} />
                 </div>
               </div>
             )}
