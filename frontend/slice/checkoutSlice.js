@@ -39,6 +39,19 @@ export const initiateOrangeMoneyPayment = createAsyncThunk(
     }
   }
 );
+// Créer une facture (paiement à la livraison)
+export const createInvoice = createAsyncThunk(
+  "checkout/createInvoice",
+  async (invoiceData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/invoices", invoiceData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Invoice failed" });
+    }
+  }
+);
+
 
 const checkoutSlice = createSlice({
   name: "checkout",
@@ -48,6 +61,7 @@ const checkoutSlice = createSlice({
     error: null,
     paymentUrl: null,
     success: false,
+    invoice: null, // ✅ nouvelle propriété
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -82,8 +96,23 @@ const checkoutSlice = createSlice({
       })
       .addCase(initiateOrangeMoneyPayment.rejected, (state, action) => {
         state.error = action.payload?.message || "Orange Money payment failed";
+      })
+
+      // ✅ createInvoice
+      .addCase(createInvoice.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createInvoice.fulfilled, (state, action) => {
+        state.loading = false;
+        state.invoice = action.payload;
+      })
+      .addCase(createInvoice.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Invoice failed";
       });
   },
 });
+
 
 export default checkoutSlice.reducer;
