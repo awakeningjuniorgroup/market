@@ -6,6 +6,9 @@ const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+// ✅ Helper pour valider les méthodes de paiement
+const validMethods = ["COD", "PayPal", "OrangeMoney", "pending"];
+
 /**
  * @route POST /api/checkout
  * @desc Create a new checkout session (user logged in)
@@ -18,12 +21,18 @@ router.post("/", protect, async (req, res) => {
     return res.status(400).json({ message: "No items in checkout" });
   }
 
+  if (!shippingAddress?.firstName || !shippingAddress?.lastName || !shippingAddress?.email || !shippingAddress?.phone || !shippingAddress?.city || !shippingAddress?.country) {
+    return res.status(400).json({ message: "Missing required shipping fields" });
+  }
+
   try {
+    const method = validMethods.includes(paymentMethod) ? paymentMethod : "COD";
+
     const newCheckout = await Checkout.create({
       user: req.user._id,
       checkoutItems,
       shippingAddress,
-      paymentMethod,
+      paymentMethod: method,
       totalPrice,
       paymentStatus: "pending",
       isPaid: false,
@@ -49,13 +58,19 @@ router.post("/guest", async (req, res) => {
     return res.status(400).json({ message: "No items in checkout" });
   }
 
+  if (!shippingAddress?.firstName || !shippingAddress?.lastName || !shippingAddress?.email || !shippingAddress?.phone || !shippingAddress?.city || !shippingAddress?.country) {
+    return res.status(400).json({ message: "Missing required shipping fields" });
+  }
+
   try {
+    const method = validMethods.includes(paymentMethod) ? paymentMethod : "COD";
+
     const newCheckout = await Checkout.create({
       user: null,
-      guestId: `GUEST-${Date.now()}`, // identifiant invité
+      guestId: `GUEST-${Date.now()}`,
       checkoutItems,
       shippingAddress,
-      paymentMethod: paymentMethod || "COD", // ✅ valeur par défaut
+      paymentMethod: method,
       totalPrice,
       paymentStatus: "pending",
       isPaid: false,
