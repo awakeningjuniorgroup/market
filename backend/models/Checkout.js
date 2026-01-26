@@ -28,7 +28,6 @@ const checkoutSchema = new mongoose.Schema(
       quarter: { type: String },
       city: { type: String, required: true },
       region: { type: String },
-      postalCode: { type: String },
       country: { type: String, required: true },
     },
 
