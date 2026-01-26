@@ -4,7 +4,7 @@ import PayPalButton from "./PayPalButton";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createCheckout,
-  createGuestCheckout, // ✅ import du thunk invité
+  createGuestCheckout,
   finalizeCheckout,
   initiateOrangeMoneyPayment,
 } from "../../../slice/checkoutSlice";
@@ -18,7 +18,7 @@ const OrangeMoneyButton = ({ amount }) => {
     if (res.payload?.payment_url) {
       window.location.href = res.payload.payment_url;
     } else {
-      alert(error || "Erreur: pas d'URL de paiement reçue");
+      alert(error?.message || "Erreur: pas d'URL de paiement reçue");
     }
   };
 
@@ -32,14 +32,9 @@ const OrangeMoneyButton = ({ amount }) => {
   );
 };
 
-// ✅ Paiement à la livraison
 const CashOnDeliveryButton = ({ checkoutId }) => {
   const navigate = useNavigate();
-
-  const handleCOD = () => {
-    // Redirection vers la page facture
-    navigate(`/invoice/${checkoutId}`);
-  };
+  const handleCOD = () => navigate(`/invoice/${checkoutId}`);
 
   return (
     <button
@@ -56,7 +51,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { cart, loading, error } = useSelector((state) => state.cart);
-  const { user } = useSelector((state) => state.auth); // ✅ récupère l’utilisateur connecté
+  const { user } = useSelector((state) => state.auth);
 
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
@@ -81,11 +76,10 @@ const Checkout = () => {
     const payload = {
       checkoutItems: cart.products,
       shippingAddress,
-      paymentMethod: "pending",
+      paymentMethod: user ? "pending" : "COD", // ✅ COD par défaut pour invités
       totalPrice: cart.totalPrice,
     };
 
-    // ✅ Choix entre checkout connecté ou invité
     const res = user
       ? await dispatch(createCheckout(payload))
       : await dispatch(createGuestCheckout(payload));
@@ -101,7 +95,7 @@ const Checkout = () => {
   };
 
   if (loading) return <p>Loading cart…</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (error) return <p>Error: {error?.message || error}</p>;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto py-10 px-6 tracking-tighter">
@@ -109,7 +103,6 @@ const Checkout = () => {
       <div className="bg-white rounded-lg p-6">
         <h2 className="text-2xl uppercase mb-6">Checkout</h2>
         <form onSubmit={handleCreateCheckout}>
-          {/* Formulaire coordonnées */}
           {Object.entries(shippingAddress).map(([key, value]) => (
             <div className="mb-4" key={key}>
               <label className="block text-gray-700 capitalize">{key}</label>
@@ -120,7 +113,7 @@ const Checkout = () => {
                   setShippingAddress({ ...shippingAddress, [key]: e.target.value })
                 }
                 className="w-full p-2 border rounded"
-                required
+                required={["firstName","lastName","email","phone","city","country"].includes(key)} // ✅ requis seulement pour les champs obligatoires
               />
             </div>
           ))}
