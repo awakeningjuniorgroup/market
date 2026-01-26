@@ -2,14 +2,16 @@ const express = require("express");
 const Checkout = require("../models/Checkout");
 const Cart = require("../models/Cart");
 const Product = require("../models/Products");
-const Order = require("../models/Order"); // ✅ import manquant
+const Order = require("../models/Order");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// @route POST /api/checkout
-// @desc Create a new checkout session
-// @access Private
+/**
+ * @route POST /api/checkout
+ * @desc Create a new checkout session (user logged in)
+ * @access Private
+ */
 router.post("/", protect, async (req, res) => {
   const { checkoutItems, shippingAddress, paymentMethod, totalPrice } = req.body;
 
@@ -37,9 +39,43 @@ router.post("/", protect, async (req, res) => {
   }
 });
 
-// @route PUT /api/checkout/:id/pay
-// @desc Mark checkout as paid
-// @access Private
+/**
+ * @route POST /api/checkout/guest
+ * @desc Create a new checkout session (guest user)
+ * @access Public
+ */
+router.post("/guest", async (req, res) => {
+  const { checkoutItems, shippingAddress, paymentMethod, totalPrice } = req.body;
+
+  if (!checkoutItems || checkoutItems.length === 0) {
+    return res.status(400).json({ message: "No items in checkout" });
+  }
+
+  try {
+    const newCheckout = await Checkout.create({
+      user: null, // ✅ pas d’utilisateur
+      checkoutItems,
+      shippingAddress,
+      paymentMethod,
+      totalPrice,
+      paymentStatus: "pending",
+      isPaid: false,
+      isFinalized: false,
+    });
+
+    console.log("Checkout created for guest user");
+    res.status(201).json(newCheckout);
+  } catch (error) {
+    console.error("Error creating guest checkout session:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+/**
+ * @route PUT /api/checkout/:id/pay
+ * @desc Mark checkout as paid
+ * @access Private
+ */
 router.put("/:id/pay", protect, async (req, res) => {
   const { paymentStatus, paymentDetails } = req.body;
 
@@ -67,9 +103,11 @@ router.put("/:id/pay", protect, async (req, res) => {
   }
 });
 
-// @route POST /api/checkout/:id/finalize
-// @desc Finalize checkout and create order
-// @access Private
+/**
+ * @route POST /api/checkout/:id/finalize
+ * @desc Finalize checkout and create order
+ * @access Private (mais tu peux aussi l’ouvrir aux guests si besoin)
+ */
 router.post("/:id/finalize", protect, async (req, res) => {
   try {
     const checkout = await Checkout.findById(req.params.id);
@@ -80,23 +118,25 @@ router.post("/:id/finalize", protect, async (req, res) => {
 
     if (checkout.isPaid && !checkout.isFinalized) {
       const finalOrder = await Order.create({
-        user: checkout.user,
-        orderItems: checkout.checkoutItems, // ✅ corrigé
+        user: checkout.user || null, // ✅ accepte guest
+        orderItems: checkout.checkoutItems,
         shippingAddress: checkout.shippingAddress,
         paymentMethod: checkout.paymentMethod,
-        totalPrice: checkout.totalPrice, // ✅ corrigé
+        totalPrice: checkout.totalPrice,
         isPaid: true,
         paidAt: checkout.paidAt,
         isDelivered: false,
-        paymentStatus: "paid", // ✅ corrigé
+        paymentStatus: "paid",
         paymentDetails: checkout.paymentDetails,
       });
 
       checkout.isFinalized = true;
-      checkout.finalizedAt = Date.now(); // ✅ renommé
+      checkout.finalizedAt = Date.now();
       await checkout.save();
 
-      await Cart.findOneAndDelete({ user: checkout.user });
+      if (checkout.user) {
+        await Cart.findOneAndDelete({ user: checkout.user });
+      }
 
       res.status(201).json(finalOrder);
     } else if (checkout.isFinalized) {
