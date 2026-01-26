@@ -17,6 +17,8 @@ const validMethods = ["COD", "PayPal", "OrangeMoney", "pending"];
 router.post("/", protect, async (req, res) => {
   const { checkoutItems, shippingAddress, paymentMethod, totalPrice } = req.body;
 
+  console.log("📦 [CHECKOUT USER] Payload reçu:", req.body);
+
   if (!checkoutItems || checkoutItems.length === 0) {
     return res.status(400).json({ message: "No items in checkout" });
   }
@@ -39,9 +41,10 @@ router.post("/", protect, async (req, res) => {
       isFinalized: false,
     });
 
+    console.log("✅ Checkout utilisateur créé:", newCheckout);
     res.status(201).json(newCheckout);
   } catch (error) {
-    console.error("Error creating checkout session:", error.message);
+    console.error("❌ Error creating checkout session:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
@@ -53,6 +56,8 @@ router.post("/", protect, async (req, res) => {
  */
 router.post("/guest", async (req, res) => {
   const { checkoutItems, shippingAddress, paymentMethod, totalPrice } = req.body;
+
+  console.log("📦 [CHECKOUT GUEST] Payload reçu:", req.body);
 
   if (!checkoutItems || checkoutItems.length === 0) {
     return res.status(400).json({ message: "No items in checkout" });
@@ -77,9 +82,10 @@ router.post("/guest", async (req, res) => {
       isFinalized: false,
     });
 
+    console.log("✅ Checkout invité créé:", newCheckout);
     res.status(201).json(newCheckout);
   } catch (error) {
-    console.error("Error creating guest checkout session:", error.message);
+    console.error("❌ Error creating guest checkout session:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
@@ -91,6 +97,7 @@ router.post("/guest", async (req, res) => {
  */
 router.put("/:id/pay", protect, async (req, res) => {
   const { paymentStatus, paymentDetails } = req.body;
+  console.log("💳 [PAYMENT] Payload reçu:", req.body);
 
   try {
     const checkout = await Checkout.findById(req.params.id);
@@ -103,12 +110,13 @@ router.put("/:id/pay", protect, async (req, res) => {
       checkout.paidAt = Date.now();
       await checkout.save();
 
+      console.log("✅ Checkout payé:", checkout);
       res.status(200).json(checkout);
     } else {
       res.status(400).json({ message: "Invalid Payment Status" });
     }
   } catch (error) {
-    console.error("Error updating payment:", error.message);
+    console.error("❌ Error updating payment:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
@@ -119,6 +127,8 @@ router.put("/:id/pay", protect, async (req, res) => {
  * @access Public (pour autoriser les invités aussi)
  */
 router.post("/:id/finalize", async (req, res) => {
+  console.log("🔒 [FINALIZE] Checkout ID:", req.params.id);
+
   try {
     const checkout = await Checkout.findById(req.params.id);
     if (!checkout) return res.status(404).json({ message: "Checkout not found" });
@@ -145,6 +155,7 @@ router.post("/:id/finalize", async (req, res) => {
         await Cart.findOneAndDelete({ user: checkout.user });
       }
 
+      console.log("✅ Checkout finalisé, commande créée:", finalOrder);
       res.status(201).json(finalOrder);
     } else if (checkout.isFinalized) {
       res.status(400).json({ message: "Checkout already finalized" });
@@ -152,7 +163,7 @@ router.post("/:id/finalize", async (req, res) => {
       res.status(400).json({ message: "Checkout is not paid" });
     }
   } catch (error) {
-    console.error("Error finalizing checkout:", error.message);
+    console.error("❌ Error finalizing checkout:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
