@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
-const cookieParser = require("cookie-parser")
+const cookieParser = require("cookie-parser");
 
 // Import des routes
 const userRoutes = require("./routes/userRoutes");
@@ -13,26 +13,30 @@ const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const subscribeRoutes = require("./routes/subscribeRoutes");
 const orangeMoneyRoutes = require("./routes/orangeMoneyRoutes");
-const orangeMoneyvalidationRoutes = require("./routes/orangeMoneyRoutes");
 
 // Routes Admin
-const adminUserRoutes = require("./routes/adminRoutes"); // gestion des utilisateurs admin
-const adminProductRoutes = require("./routes/productAdminRoutes"); // gestion des produits admin
-const adminOrderRoutes = require("./routes/adminOrderRoutes"); // gestion des commandes admin
+const adminUserRoutes = require("./routes/adminRoutes");
+const adminProductRoutes = require("./routes/productAdminRoutes");
+const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 // Initialisation de l'app
 const app = express();
-require("dotenv").config(); 
+require("dotenv").config();
+
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ 
-  origin: "https://kams-market12.onrender.com",
+app.use(cors({
+  origin: [
+    "https://kams-market12.onrender.com",
+    "http://localhost:5173"
+  ],
   credentials: true,
   allowedHeaders: ["Authorization", "Content-Type"],
-}
-));
+}));
+
+// Auth routes
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
 
@@ -56,7 +60,6 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/subscribe", subscribeRoutes);
 app.use("/api/orange-money", orangeMoneyRoutes);
-app.use("/api/initiate-payment", orangeMoneyvalidationRoutes)
 
 // API Routes Admin
 app.use("/api/admin/users", adminUserRoutes);
