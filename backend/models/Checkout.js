@@ -25,9 +25,9 @@ const checkoutSchema = new mongoose.Schema(
       lastName: { type: String, required: true },
       email: { type: String, required: true },
       phone: { type: String, required: true },
-      quarter: { type: String },
+      quarter: { type: String, required: true },
       city: { type: String, required: true },
-      region: { type: String },
+      region: { type: String, required: true },
       country: { type: String, required: true },
     },
 
