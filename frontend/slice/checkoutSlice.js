@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance.js"; // ton axiosInstance avec interceptors
 
-// Créer un checkout
+// Créer un checkout (utilisateur connecté)
 export const createCheckout = createAsyncThunk(
   "checkout/createCheckout",
   async (checkoutData, { rejectWithValue }) => {
@@ -10,6 +10,19 @@ export const createCheckout = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Checkout failed" });
+    }
+  }
+);
+
+// ✅ Créer un checkout invité
+export const createGuestCheckout = createAsyncThunk(
+  "checkout/createGuestCheckout",
+  async (checkoutData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/checkout/guest", checkoutData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Guest checkout failed" });
     }
   }
 );
@@ -39,6 +52,7 @@ export const initiateOrangeMoneyPayment = createAsyncThunk(
     }
   }
 );
+
 // Créer une facture (paiement à la livraison)
 export const createInvoice = createAsyncThunk(
   "checkout/createInvoice",
@@ -52,7 +66,6 @@ export const createInvoice = createAsyncThunk(
   }
 );
 
-
 const checkoutSlice = createSlice({
   name: "checkout",
   initialState: {
@@ -61,7 +74,7 @@ const checkoutSlice = createSlice({
     error: null,
     paymentUrl: null,
     success: false,
-    invoice: null, // ✅ nouvelle propriété
+    invoice: null,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -78,6 +91,20 @@ const checkoutSlice = createSlice({
       .addCase(createCheckout.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Checkout failed";
+      })
+
+      // ✅ createGuestCheckout
+      .addCase(createGuestCheckout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createGuestCheckout.fulfilled, (state, action) => {
+        state.loading = false;
+        state.checkout = action.payload;
+      })
+      .addCase(createGuestCheckout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Guest checkout failed";
       })
 
       // finalizeCheckout
@@ -98,7 +125,7 @@ const checkoutSlice = createSlice({
         state.error = action.payload?.message || "Orange Money payment failed";
       })
 
-      // ✅ createInvoice
+      // createInvoice
       .addCase(createInvoice.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -113,6 +140,5 @@ const checkoutSlice = createSlice({
       });
   },
 });
-
 
 export default checkoutSlice.reducer;
