@@ -4,6 +4,7 @@ import PayPalButton from "./PayPalButton";
 import { useDispatch, useSelector } from "react-redux";
 import {
   createCheckout,
+  createGuestCheckout, // ✅ import du thunk invité
   finalizeCheckout,
   initiateOrangeMoneyPayment,
 } from "../../../slice/checkoutSlice";
@@ -31,14 +32,13 @@ const OrangeMoneyButton = ({ amount }) => {
   );
 };
 
-// ✅ Nouveau bouton Paiement à la livraison
+// ✅ Paiement à la livraison
 const CashOnDeliveryButton = ({ checkoutId }) => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleCOD = async () => {
-    await dispatch(finalizeCheckout(checkoutId)); // on finalise la commande sans paiement
-    navigate("/order-confirmation");
+  const handleCOD = () => {
+    // Redirection vers la page facture
+    navigate(`/invoice/${checkoutId}`);
   };
 
   return (
@@ -56,6 +56,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { cart, loading, error } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.auth); // ✅ récupère l’utilisateur connecté
 
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
@@ -76,14 +77,19 @@ const Checkout = () => {
 
   const handleCreateCheckout = async (e) => {
     e.preventDefault();
-    const res = await dispatch(
-      createCheckout({
-        checkoutItems: cart.products,
-        shippingAddress,
-        paymentMethod: "pending",
-        totalPrice: cart.totalPrice,
-      })
-    );
+
+    const payload = {
+      checkoutItems: cart.products,
+      shippingAddress,
+      paymentMethod: "pending",
+      totalPrice: cart.totalPrice,
+    };
+
+    // ✅ Choix entre checkout connecté ou invité
+    const res = user
+      ? await dispatch(createCheckout(payload))
+      : await dispatch(createGuestCheckout(payload));
+
     if (res.payload?._id) {
       setCheckoutId(res.payload._id);
     }
@@ -93,25 +99,6 @@ const Checkout = () => {
     await dispatch(finalizeCheckout(checkoutId));
     navigate("/order-confirmation");
   };
-  // ✅ Nouveau bouton Paiement à la livraison
-  const CashOnDeliveryButton = ({ checkoutId }) => {
-    const navigate = useNavigate();
-
-    const handleCOD = () => {
-      // Redirection vers la page facture
-      navigate(`/invoice/${checkoutId}`);
-    };
-
-    return (
-      <button
-        onClick={handleCOD}
-        className="w-full bg-green-600 text-white py-3 rounded hover:bg-green-700"
-      >
-        Paiement à la livraison
-      </button>
-    );
-  };
-
 
   if (loading) return <p>Loading cart…</p>;
   if (error) return <p>Error: {error}</p>;
@@ -156,7 +143,6 @@ const Checkout = () => {
                     onError={() => alert("Paiement échoué. Réessayez.")}
                   />
                   <OrangeMoneyButton amount={cart.totalPrice} />
-                  {/* ✅ Bouton COD */}
                   <CashOnDeliveryButton checkoutId={checkoutId} />
                 </div>
               </div>
