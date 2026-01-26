@@ -7,7 +7,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import CollectionPage from "./pages/CollectionPage";
 import ProductDetails from "./components/products/ProductDetails";
-import Checkout from "./components/cart/checkout";
+import Checkout from "./components/cart/checkout"; // ⚠️ majuscule cohérente
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
@@ -23,37 +23,41 @@ import Invoice from "./components/cart/Invoice";
 import { Provider } from "react-redux";
 import store from "../redux/store";
 
-
-
 const App = () => {
   return (
     <Provider store={store}>
-      <BrowserRouter future={{v7_startTransition: true, v7_relativeSplatPath: true}}>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Toaster position="top-right" />
-          <Routes>
-            <Route path="/" element={<UserLayout />}>
-                <Route index element={<Home />}></Route>
-                <Route path="login" element={<Login />}></Route>
-                <Route path="register" element={<Register />}></Route>
-                <Route path="profile" element={<Profile />}></Route>
-                <Route path="collections/:collection" element={<CollectionPage />} />
-                <Route path="product/:id" element={<ProductDetails />} />
-                <Route path="Checkout" element={<Checkout />} />
-                <Route path="/invoice/:id" element={<Invoice />} />
-                <Route path="order-confirmation" element={<OrderConfirmationPage />} />
-                <Route path="order/:id" element={<OrderDetailsPage />}/>
-                <Route path="my-orders" element={<MyOrdersPage />} />
+        <Routes>
+          <Route path="/" element={<UserLayout />}>
+            <Route index element={<Home />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="collections/:collection" element={<CollectionPage />} />
+            <Route path="product/:id" element={<ProductDetails />} />
+            <Route path="checkout" element={<Checkout />} /> {/* ✅ corrigé */}
+            <Route path="invoice/:id" element={<Invoice />} /> {/* ✅ corrigé */}
+            <Route path="order-confirmation" element={<OrderConfirmationPage />} />
+            <Route path="order/:id" element={<OrderDetailsPage />} />
+            <Route path="my-orders" element={<MyOrdersPage />} />
+          </Route>
 
-            </Route>
-            <Route path="/admin" element={<ProtectRoute role="admin"><AdminLayout /></ProtectRoute>} >
-              <Route index element ={<AdminHomePage />} />
-              <Route path="users" element={<UserManagement />} />
-              <Route path="products" element={<ProductManagement />} />
-              <Route path="products/:id/edit" element={<EditProductPage />} />
-              <Route path="orders" element={<OrderManagement />} />
-            </Route>
-            <Route>{/*user Layout*/} </Route>
-          </Routes>
+          <Route
+            path="/admin"
+            element={
+              <ProtectRoute role="admin">
+                <AdminLayout />
+              </ProtectRoute>
+            }
+          >
+            <Route index element={<AdminHomePage />} />
+            <Route path="users" element={<UserManagement />} />
+            <Route path="products" element={<ProductManagement />} />
+            <Route path="products/:id/edit" element={<EditProductPage />} />
+            <Route path="orders" element={<OrderManagement />} />
+          </Route>
+        </Routes>
       </BrowserRouter>
     </Provider>
   );
