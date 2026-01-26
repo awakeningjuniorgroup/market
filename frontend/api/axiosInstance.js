@@ -7,16 +7,10 @@ const api = axios.create({
 
 // Helpers pour gérer les tokens
 const getRefreshToken = () => localStorage.getItem("refreshToken");
-api.interceptors.request.use( (config) => { 
-const token = localStorage.getItem("accessToken");
-  if (token) { config.headers.Authorization = `Bearer ${token}`; 
-   } 
-  return config; }, (error) => Promise.reject(error) );
 
 const setAccessToken = (token) => {
   if (token) {
     localStorage.setItem("accessToken", token);
-   
   } else {
     localStorage.removeItem("accessToken");
     console.log("AccessToken supprimé");
@@ -26,14 +20,23 @@ const setAccessToken = (token) => {
 const setRefreshToken = (token) => {
   if (token) {
     localStorage.setItem("refreshToken", token);
-    
   } else {
     localStorage.removeItem("refreshToken");
     console.log("RefreshToken supprimé");
   }
 };
 
-
+// Intercepteur REQUEST : ajoute le token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 // Intercepteur RESPONSE : gère le refresh si le token est expiré
 api.interceptors.response.use(
@@ -45,8 +48,8 @@ api.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const isTokenExpiredError = error.response?.status === 401 
-    && !originalRequest._retry;
+    const isTokenExpiredError =
+      error.response?.status === 401 && !originalRequest._retry;
 
     if (isTokenExpiredError) {
       originalRequest._retry = true;
