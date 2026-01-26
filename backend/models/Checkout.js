@@ -2,11 +2,7 @@ const mongoose = require("mongoose");
 
 const checkoutItemSchema = new mongoose.Schema(
   {
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-      required: true,
-    },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
     name: { type: String, required: true },
     image: { type: String, required: true },
     price: { type: Number, required: true },
@@ -19,15 +15,9 @@ const checkoutItemSchema = new mongoose.Schema(
 
 const checkoutSchema = new mongoose.Schema(
   {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // ✅ corriger la casse
-      required: false, // ✅ rendre optionnel pour les invités
-    },
-    guestId: {
-      type: String, // ✅ identifiant invité
-      required: false,
-    },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
+    guestId: { type: String, required: false },
+
     checkoutItems: [checkoutItemSchema],
 
     shippingAddress: {
@@ -44,27 +34,32 @@ const checkoutSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["COD", "PayPal", "OrangeMoney"], // ✅ modes de paiement
+      enum: ["COD", "PayPal", "OrangeMoney", "pending"], // ✅ ajout "pending"
       required: true,
     },
 
     totalPrice: { type: Number, required: true },
 
-    // Statut paiement
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     paymentStatus: { type: String, default: "pending" },
     paymentDetails: { type: mongoose.Schema.Types.Mixed },
 
-    // Statut commande
     isFinalized: { type: Boolean, default: false },
     finalizedAt: { type: Date },
 
-    // ✅ Facture
     invoiceNumber: { type: String, unique: true },
     invoiceDate: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
+
+// ✅ Génération automatique d’un numéro de facture unique
+checkoutSchema.pre("save", function (next) {
+  if (!this.invoiceNumber) {
+    this.invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  }
+  next();
+});
 
 module.exports = mongoose.model("Checkout", checkoutSchema);
