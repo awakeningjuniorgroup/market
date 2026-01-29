@@ -14,18 +14,18 @@ export const createCheckout = createAsyncThunk(
   }
 );
 
-// ✅ Créer un checkout invité
-// export const createGuestCheckout = createAsyncThunk(
-//   "checkout/createGuestCheckout",
-//   async (checkoutData, { rejectWithValue }) => {
-//     try {
-//       const response = await api.post("/checkout/guest", checkoutData);
-//       return response.data;
-//     } catch (error) {
-//       return rejectWithValue(error.response?.data || { message: "Guest checkout failed" });
-//     }
-//   }
-// );
+// Créer un checkout invité
+export const createGuestCheckout = createAsyncThunk(
+  "checkout/createGuestCheckout",
+  async (checkoutData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/checkout/guest", checkoutData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Guest checkout failed" });
+    }
+  }
+);
 
 // Finaliser un checkout
 export const finalizeCheckout = createAsyncThunk(
@@ -33,7 +33,7 @@ export const finalizeCheckout = createAsyncThunk(
   async (checkoutId, { rejectWithValue }) => {
     try {
       const response = await api.post(`/checkout/${checkoutId}/finalize`);
-      return response.data;
+      return response.data; // ⚠️ backend renvoie finalOrder
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Finalize failed" });
     }
@@ -70,13 +70,24 @@ const checkoutSlice = createSlice({
   name: "checkout",
   initialState: {
     checkout: null,
+    order: null,       // ✅ ajout pour stocker la commande finale
     loading: false,
     error: null,
     paymentUrl: null,
     success: false,
     invoice: null,
   },
-  reducers: {},
+  reducers: {
+    resetCheckoutState: (state) => {
+      state.checkout = null;
+      state.order = null;
+      state.loading = false;
+      state.error = null;
+      state.paymentUrl = null;
+      state.success = false;
+      state.invoice = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       // createCheckout
@@ -93,7 +104,7 @@ const checkoutSlice = createSlice({
         state.error = action.payload?.message || "Checkout failed";
       })
 
-      // ✅ createGuestCheckout
+      // createGuestCheckout
       .addCase(createGuestCheckout.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -108,9 +119,14 @@ const checkoutSlice = createSlice({
       })
 
       // finalizeCheckout
-      .addCase(finalizeCheckout.fulfilled, (state) => {
+      .addCase(finalizeCheckout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(finalizeCheckout.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
+        state.order = action.payload; // ✅ stocke la commande finale
       })
       .addCase(finalizeCheckout.rejected, (state, action) => {
         state.loading = false;
@@ -118,10 +134,16 @@ const checkoutSlice = createSlice({
       })
 
       // initiateOrangeMoneyPayment
+      .addCase(initiateOrangeMoneyPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(initiateOrangeMoneyPayment.fulfilled, (state, action) => {
+        state.loading = false;
         state.paymentUrl = action.payload.payment_url;
       })
       .addCase(initiateOrangeMoneyPayment.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload?.message || "Orange Money payment failed";
       })
 
@@ -141,4 +163,5 @@ const checkoutSlice = createSlice({
   },
 });
 
+export const { resetCheckoutState } = checkoutSlice.actions;
 export default checkoutSlice.reducer;
