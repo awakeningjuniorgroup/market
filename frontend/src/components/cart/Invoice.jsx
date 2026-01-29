@@ -9,7 +9,7 @@ const Invoice = () => {
   const now = new Date();
   const date = now.toLocaleDateString();
   const time = now.toLocaleTimeString();
-console.log("voici l checkutid" checkout )
+console.log("voici l checkutid", checkout )
   if (!checkout || checkout._id !== id) {
     return <p>Facture introuvable</p>;
   }
