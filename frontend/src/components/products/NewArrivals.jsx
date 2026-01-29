@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { Link } from "react-router-dom";
-import api from "../../api/axiosInstance"; // ✅ utilise ton axiosInstance
+import api from "../../../api/axiosInstance"; // ✅ utilise ton axiosInstance
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
