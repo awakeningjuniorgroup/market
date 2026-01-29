@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/axiosInstance"; // ✅ utilise ton axiosInstance
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
@@ -16,12 +16,12 @@ const NewArrivals = () => {
   useEffect(() => {
     const fetchNewArrivals = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
-        );
+        // ✅ pas besoin de `${import.meta.env.VITE_BACKEND_URL}`, 
+        // ton axiosInstance a déjà le baseURL
+        const response = await api.get("/products/new-arrivals");
         setNewArrivals(response.data);
       } catch (error) {
-        console.error(error);
+        console.error("Erreur lors du fetch des new arrivals:", error);
       }
     };
     fetchNewArrivals();
@@ -130,7 +130,7 @@ const NewArrivals = () => {
               <div className="absolute bottom-0 left-0 right-0 bg-opacity-50 backdrop-blur-md text-white p-4 rounded-b-lg">
                 <Link to={`/product/${product._id}`} className="block">
                   <h4 className="font-medium">{product.name}</h4>
-                  <p className="mt-1">{product.price}   FCFA</p>
+                  <p className="mt-1">{product.price} FCFA</p>
                 </Link>
               </div>
             </div>
