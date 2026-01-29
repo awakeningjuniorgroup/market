@@ -53,11 +53,11 @@ const checkoutSchema = new mongoose.Schema(
 );
 
 // ✅ Génération automatique d’un numéro de facture unique
-checkoutSchema.pre("save", function (next) {
+checkoutSchema.pre("save", function () {
   if (!this.invoiceNumber) {
     this.invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   }
-  next();
 });
+
 
 module.exports = mongoose.model("Checkout", checkoutSchema);
