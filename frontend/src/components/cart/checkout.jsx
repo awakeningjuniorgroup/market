@@ -113,7 +113,7 @@ const Checkout = () => {
                   setShippingAddress({ ...shippingAddress, [key]: e.target.value })
                 }
                 className="w-full p-2 border rounded"
-                required={["firstName","lastName","email","phone","city","country"].includes(key)} // ✅ requis seulement pour les champs obligatoires
+                required={["firstName","lastName","email","phone","city","quarter","region","country"].includes(key)} // ✅ requis seulement pour les champs obligatoires
               />
             </div>
           ))}
