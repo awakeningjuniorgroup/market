@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ 
-  origin: "*",
+  origin: "https://kams-market12.onrender.com",
   credentials: true,
   allowedHeaders: ["Authorization", "Content-Type"],
 }
