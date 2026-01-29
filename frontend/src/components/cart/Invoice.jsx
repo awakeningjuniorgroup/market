@@ -12,9 +12,9 @@ const Invoice = () => {
   const date = now.toLocaleDateString();
   const time = now.toLocaleTimeString();
 
-  if (!checkout || checkout._id !== id) {
-    return <p>Facture introuvable</p>;
-  }
+  // if (!checkout || checkout._id !== id) {
+  //   return <p>Facture introuvable</p>;
+  // }
 
   const handleDownload = async () => {
     const invoiceElement = document.getElementById("invoice-content");
