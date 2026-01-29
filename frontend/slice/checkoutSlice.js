@@ -15,17 +15,17 @@ export const createCheckout = createAsyncThunk(
 );
 
 // ✅ Créer un checkout invité
-export const createGuestCheckout = createAsyncThunk(
-  "checkout/createGuestCheckout",
-  async (checkoutData, { rejectWithValue }) => {
-    try {
-      const response = await api.post("/checkout/guest", checkoutData);
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || { message: "Guest checkout failed" });
-    }
-  }
-);
+// export const createGuestCheckout = createAsyncThunk(
+//   "checkout/createGuestCheckout",
+//   async (checkoutData, { rejectWithValue }) => {
+//     try {
+//       const response = await api.post("/checkout/guest", checkoutData);
+//       return response.data;
+//     } catch (error) {
+//       return rejectWithValue(error.response?.data || { message: "Guest checkout failed" });
+//     }
+//   }
+// );
 
 // Finaliser un checkout
 export const finalizeCheckout = createAsyncThunk(
