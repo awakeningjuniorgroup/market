@@ -19,11 +19,11 @@ const Topbar = () => {
           </a>
         </div>
         <div className="text-sm text-center flex-grow-0">
-          <span> we ship worldwide - fast and reliable shipping!</span>
+          <span> we ship - fast and reliable shipping!</span>
         </div>
         <div className="text-sm hidden md:block">
           <a href="tel:+237672030842" className="hover:text-gray-300">
-            (+237) 672030842
+            (+237) 681423149
           </a>
         </div>
       </div>
