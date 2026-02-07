@@ -58,6 +58,7 @@ const App = () => {
             <Route path="orders" element={<OrderManagement />} />
           </Route>
         </Routes>
+         <WhatsAppButton />
       </BrowserRouter>
     </Provider>
   );
