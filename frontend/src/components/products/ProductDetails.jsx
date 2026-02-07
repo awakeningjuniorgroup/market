@@ -74,7 +74,7 @@ const handleBuyNow = async () => {
       phone: "",
       quarter: "",
       city: "",
-      country: "",
+      country: ""
     },
 
     paymentMethod: "pending",
