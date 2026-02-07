@@ -46,6 +46,45 @@ const ProductDetails = ({ productId }) => {
     if (action === "plus") setQuantity((prev) => prev + 1);
     if (action === "minus" && quantity > 1) setQuantity((prev) => prev - 1);
   };
+  
+
+const handleBuyNow = async () => {
+  if (!selectedSize || !selectedColor) {
+    toast.error("Please select a size and a color before buying.", { duration: 1000 });
+    return;
+  }
+
+  const payload = {
+    checkoutItems: [
+      {
+        productId: productFetchId,
+        name: selectedProduct?.name,
+        image: mainImage,
+        price: selectedProduct?.discountPrice || selectedProduct?.price,
+        quantity,
+        size: selectedSize,
+        color: selectedColor,
+      },
+    ],
+    shippingAddress: {}, // sera rempli dans la page checkout
+    paymentMethod: "pending",
+    totalPrice: (selectedProduct?.discountPrice || selectedProduct?.price) * quantity,
+  };
+
+  try {
+    const res = user
+      ? await dispatch(createCheckout(payload)).unwrap()
+      : await dispatch(createGuestCheckout(payload)).unwrap();
+
+    if (res._id) {
+      // ✅ Redirection directe vers la page checkout
+      navigate(`/checkout/${res._id}`);
+    }
+  } catch (err) {
+    toast.error(err.message || "Failed to create checkout", { duration: 1000 });
+  }
+};
+
 
   const handleAddToCart = () => {
     if (!selectedSize || !selectedColor) {
@@ -215,6 +254,16 @@ const ProductDetails = ({ productId }) => {
               >
                 {isButtonDisabled ? "Adding..." : "Add to Cart"}
               </button>
+              <button
+                  onClick={handleBuyNow}
+                  disabled={isButtonDisabled}
+                  className={`bg-red-600 text-white py-2 px-6 rounded w-full mb-4 ${
+                    isButtonDisabled ? "cursor-not-allowed opacity-50" : "hover:bg-red-700"
+                  }`}
+                >
+                  Buy Now
+                </button>
+
 
               <div className="mt-10 text-gray-700">
                 <h3 className="text-xl font-bold mb-4">Characteristics:</h3>
