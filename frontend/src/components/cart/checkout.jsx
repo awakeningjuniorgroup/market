@@ -58,7 +58,7 @@ const Checkout = () => {
     quarter: "",
     city: "",
     country: "",
-    phone: "",
+    phone: ""
   });
 
   useEffect(() => {
