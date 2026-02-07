@@ -3,6 +3,7 @@ import { Config } from 'tailwindcss'
 
 /** @type {Config} */
 export default {
+  darkMode: "class",
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",   // ← important pour React/Vite
