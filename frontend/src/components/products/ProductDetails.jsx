@@ -8,6 +8,8 @@ import {
   fetchSimilarProducts,
 } from "../../../slice/productsSlice";
 import { addToCart } from "../../../slice/cartSlice";
+import { createCheckout, createGuestCheckout } from "../../../slice/checkoutSlice";
+
 import tinycolor from "tinycolor2";
 
 const ProductDetails = ({ productId }) => {
