@@ -39,9 +39,10 @@ const Invoice = () => {
         <p><strong>Heure :</strong> {time}</p>
 
         <h3 className="text-lg mt-6 mb-2">Coordonnées client</h3>
-        <p>{checkout.shippingAddress.firstName}
+        <p>{checkout.shippingAddress.firstName}</p>
         <p>{checkout.shippingAddress.phone}</p>
-        <p>{checkout.shippingAddress.quarter}, {checkout.shippingAddress.city},, {checkout.shippingAddress.country}</p>
+        <p>{checkout.shippingAddress.quarter} - {checkout.shippingAddress.city} </p>
+        <p>{checkout.shippingAddress.country}</p>
 
         <h3 className="text-lg mt-6 mb-2">Produits</h3>
         <div className="border-t py-4">
