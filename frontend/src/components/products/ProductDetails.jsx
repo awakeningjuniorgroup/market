@@ -49,7 +49,7 @@ const ProductDetails = ({ productId }) => {
     if (action === "minus" && quantity > 1) setQuantity((prev) => prev - 1);
   };
   
-
+const navigate = useNavigate();
 const handleBuyNow = async () => {
   if (!selectedSize || !selectedColor) {
     toast.error("Please select a size and a color before buying.", { duration: 1000 });
