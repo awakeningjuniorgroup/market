@@ -110,7 +110,7 @@ const Checkout = () => {
                   setShippingAddress({ ...shippingAddress, [key]: e.target.value })
                 }
                 className="w-full p-2 border rounded"
-                required={["firstName","phone","city","quarter","country"].includes(key)} // ✅ requis seulement pour les champs obligatoires
+                required={["firstName","quarter","city","country","phone"].includes(key)} // ✅ requis seulement pour les champs obligatoires
               />
             </div>
           ))}
@@ -121,11 +121,11 @@ const Checkout = () => {
                 type="submit"
                 className="w-full bg-black text-white py-3 rounded hover:bg-red-600"
               >
-                Vérifier mes informations
+                validate my order
               </button>
             ) : (
               <div>
-                <div className="text-lg mb-4">Choisissez votre mode de paiement</div>
+                <div className="text-lg mb-4">Check your payment </div>
                 <div className="flex flex-col gap-4">
                   <PayPalButton
                     amount={cart.totalPrice}
