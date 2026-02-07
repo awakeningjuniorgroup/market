@@ -19,7 +19,7 @@ import EditProductPage from "./components/admin/EditProductPage";
 import OrderManagement from "./components/admin/OrderManagement";
 import ProtectRoute from "./components/common/ProtectRoute";
 import Invoice from "./components/cart/Invoice";
-import WhatsAppButton from "./components/common/WhatsAppButton";
+import WhatsAppButton from "./components/common/whatsAppButton";
 
 
 import { Provider } from "react-redux";
