@@ -70,11 +70,11 @@ const handleBuyNow = async () => {
       },
     ],
     shippingAddress: {
-      firstName: "",
-      phone: "",
-      quarter: "",
-      city: "",
-      country: ""
+      firstName: "*",
+      phone: "*",
+      quarter: "*",
+      city: "*",
+      country: "*"
     },
 
     paymentMethod: "pending",
