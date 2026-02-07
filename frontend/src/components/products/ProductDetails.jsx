@@ -71,12 +71,9 @@ const handleBuyNow = async () => {
     ],
     shippingAddress: {
       firstName: "*",
-      lastName: "*",
-      email: "*@example.com",
       phone: "*",
       quarter: "*",
       city: "*",
-      region: "*",
       country: "*",
     },
 
