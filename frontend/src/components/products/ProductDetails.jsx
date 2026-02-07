@@ -68,7 +68,6 @@ const handleBuyNow = async () => {
         color: selectedColor,
       },
     ],
-    shippingAddress: {}, // sera rempli dans la page checkout
     paymentMethod: "pending",
     totalPrice: (selectedProduct?.discountPrice || selectedProduct?.price) * quantity,
   };
