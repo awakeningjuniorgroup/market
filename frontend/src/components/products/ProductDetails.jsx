@@ -91,7 +91,7 @@ const handleBuyNow = async () => {
 
     if (res._id) {
       // ✅ Redirection directe vers la page checkout
-      navigate(`/checkout/${res._id}`);
+      navigate(`/checkout`);
     }
   } catch (err) {
     toast.error(err.message || "Failed to create checkout", { duration: 1000 });
