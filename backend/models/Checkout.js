@@ -20,11 +20,11 @@ const checkoutSchema = new mongoose.Schema(
     checkoutItems: [checkoutItemSchema],
 
     shippingAddress: {
-      firstName: { type: String, required: true },
-      phone: { type: String, required: true },
-      quarter: { type: String, required: true },
-      city: { type: String, required: true },
-      country: { type: String, required: true },
+      firstName: { type: String, required: false },
+      phone: { type: String, required: false },
+      quarter: { type: String, required: false },
+      city: { type: String, required: false },
+      country: { type: String, required: false },
     },
 
     paymentMethod: {
