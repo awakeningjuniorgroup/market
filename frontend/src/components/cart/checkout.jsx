@@ -151,8 +151,8 @@ const Checkout = () => {
               <option value="Douala">Douala</option>
               <option value="Yaoundé">Yaoundé</option>
               <option value="Adamaoua">Ngaroundere</option>
-              <option value="Est">bertoa</option>
-              <option value="Extrême-Nord">Maroua</option
+              <option value="Est">Bertoua</option>
+              <option value="Extrême-Nord">Maroua</option>
               <option value="Nord">Garoua</option>
               <option value="Nord-Ouest">Bamenda</option>
               <option value="Ouest">Bafoussam</option>
