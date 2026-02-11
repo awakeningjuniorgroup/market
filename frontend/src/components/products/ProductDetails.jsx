@@ -255,6 +255,7 @@ const handleBuyNow = async () => {
 
               <button
                 onClick={handleAddToCart}
+                type="button"
                 disabled={isButtonDisabled}
                 className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${
                   isButtonDisabled
@@ -266,6 +267,7 @@ const handleBuyNow = async () => {
               </button>
               <button
                   onClick={handleBuyNow}
+                  type="button"
                   disabled={isButtonDisabled}
                   className={`bg-red-600 text-white py-2 px-6 rounded w-full mb-4 ${
                     isButtonDisabled ? "cursor-not-allowed opacity-50" : "hover:bg-red-700"
