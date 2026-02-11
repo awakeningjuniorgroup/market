@@ -51,7 +51,7 @@ const ProductDetails = ({ productId }) => {
   };
   
 const navigate = useNavigate();
-const handleBuyNow = async () => {
+const handleBuyNow = async (e) => {
   if (e && e.preventDefault) e.preventDefault();
   if (!selectedSize || !selectedColor) {
     toast.error("Please select a size and a color before buying.", { duration: 1000 });
