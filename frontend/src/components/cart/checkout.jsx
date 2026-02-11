@@ -69,13 +69,19 @@ const Checkout = () => {
 
   const handleCreateCheckout = async (e) => {
     e.preventDefault();
-    // Vérification simple 
-    for (const [key, value] of Object.entries(shippingAddress)) { if (!value.trim()) { alert(`Le champ ${key} est requis`); return; } }
+
+    // Vérification simple
+    for (const [key, value] of Object.entries(shippingAddress)) {
+      if (!value.trim()) {
+        alert(`Le champ ${key} est requis`);
+        return;
+      }
+    }
 
     const payload = {
       checkoutItems: cart.products,
       shippingAddress,
-      paymentMethod: user ? "pending" : "COD", // ✅ COD par défaut pour invités
+      paymentMethod: user ? "pending" : "COD",
       totalPrice: cart.totalPrice,
     };
 
@@ -102,20 +108,89 @@ const Checkout = () => {
       <div className="bg-white rounded-lg p-6">
         <h2 className="text-2xl uppercase mb-6">Checkout</h2>
         <form onSubmit={handleCreateCheckout}>
-          {Object.entries(shippingAddress).map(([key, value]) => (
-            <div className="mb-4" key={key}>
-              <label className="block text-gray-700 capitalize">{key}</label>
-              <input
-                type="text"
-                value={value}
-                onChange={(e) =>
-                  setShippingAddress({ ...shippingAddress, [key]: e.target.value })
-                }
-                className="w-full p-2 border rounded"
-                required
-              />
-            </div>
-          ))}
+          {/* firstName */}
+          <div className="mb-4">
+            <label className="block text-gray-700 capitalize">firstName</label>
+            <input
+              type="text"
+              value={shippingAddress.firstName}
+              onChange={(e) =>
+                setShippingAddress({ ...shippingAddress, firstName: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          {/* quarter */}
+          <div className="mb-4">
+            <label className="block text-gray-700 capitalize">quarter</label>
+            <input
+              type="text"
+              value={shippingAddress.quarter}
+              onChange={(e) =>
+                setShippingAddress({ ...shippingAddress, quarter: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          {/* city avec menu déroulant */}
+          <div className="mb-4">
+            <label className="block text-gray-700 capitalize">city</label>
+            <select
+              value={shippingAddress.city}
+              onChange={(e) =>
+                setShippingAddress({ ...shippingAddress, city: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            >
+              <option value="">-- Sélectionnez une région --</option>
+              <option value="Douala">Douala</option>
+              <option value="Yaoundé">Yaoundé</option>
+              <option value="Adamaoua">Adamaoua</option>
+              <option value="Centre">Centre</option>
+              <option value="Est">Est</option>
+              <option value="Extrême-Nord">Extrême-Nord</option>
+              <option value="Littoral">Littoral</option>
+              <option value="Nord">Nord</option>
+              <option value="Nord-Ouest">Nord-Ouest</option>
+              <option value="Ouest">Ouest</option>
+              <option value="Sud">Sud</option>
+              <option value="Sud-Ouest">Sud-Ouest</option>
+            </select>
+          </div>
+
+          {/* country */}
+          <div className="mb-4">
+            <label className="block text-gray-700 capitalize">country</label>
+            <input
+              type="text"
+              value={shippingAddress.country}
+              onChange={(e) =>
+                setShippingAddress({ ...shippingAddress, country: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+            />
+          </div>
+
+          {/* phone */}
+          <div className="mb-4">
+            <label className="block text-gray-700 capitalize">phone</label>
+            <input
+              type="tel"
+              value={shippingAddress.phone}
+              onChange={(e) =>
+                setShippingAddress({ ...shippingAddress, phone: e.target.value })
+              }
+              className="w-full p-2 border rounded"
+              required
+              pattern="[0-9]{8,}" // au moins 8 chiffres
+            />
+          </div>
 
           <div className="mt-6">
             {!checkoutId ? (
@@ -135,7 +210,11 @@ const Checkout = () => {
                     onError={() => alert("Paiement échoué. Réessayez.")}
                   />
                   <OrangeMoneyButton amount={cart.totalPrice} />
-                  <CashOnDeliveryButton checkoutId={checkoutId} />
+
+                  {/* ✅ COD seulement si Douala ou Yaoundé */}
+                  {["Douala", "Yaoundé"].includes(shippingAddress.city) && (
+                    <CashOnDeliveryButton checkoutId={checkoutId} />
+                  )}
                 </div>
               </div>
             )}
