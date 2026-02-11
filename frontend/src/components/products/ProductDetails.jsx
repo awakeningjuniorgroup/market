@@ -266,7 +266,8 @@ const handleBuyNow = async (e) => {
               >
                 {isButtonDisabled ? "Adding..." : "Add to Cart"}
               </button>
-              <button
+            <div>
+                <button
                   onClick={handleBuyNow}
                   type="button"
                   disabled={isButtonDisabled}
@@ -276,6 +277,7 @@ const handleBuyNow = async (e) => {
                 >
                   Buy Now
                 </button>
+              <div/>
 
 
               <div className="mt-10 text-gray-700">
