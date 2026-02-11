@@ -20,6 +20,7 @@ import OrderManagement from "./components/admin/OrderManagement";
 import ProtectRoute from "./components/common/ProtectRoute";
 import Invoice from "./components/cart/Invoice";
 import WhatsAppButton from "./components/common/whatsAppButton";
+import ScrollToTop from "./components/common/ScrollToTop"
 
 
 import { Provider } from "react-redux";
