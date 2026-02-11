@@ -25,7 +25,7 @@ import ScrollToTop from "./components/common/ScrollToTop";
 import { Provider, useDispatch } from "react-redux";
 import store from "../redux/store";
 import { useEffect } from "react";
-import { clearCart } from "../../slice/cartSlice"; // ✅ action pour vider le panier
+import { clearCart } from "frontend/slice/cartSlice"; // ✅ action pour vider le panier
 
 // ✅ Composant wrapper pour vider le panier au chargement
 const ResetCartOnLoad = () => {
