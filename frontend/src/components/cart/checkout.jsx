@@ -81,11 +81,11 @@ const Checkout = () => {
     const payload = {
       checkoutItems: cart.products,
       shippingAddress,
-      paymentMethod: user ? "pending" : "COD",
+      paymentMethod: user?.id ? "pending" : "COD",
       totalPrice: cart.totalPrice,
     };
 
-    const res = user
+    const res = user?._id
       ? await dispatch(createCheckout(payload))
       : await dispatch(createGuestCheckout(payload));
 
