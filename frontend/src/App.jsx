@@ -7,7 +7,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import CollectionPage from "./pages/CollectionPage";
 import ProductDetails from "./components/products/ProductDetails";
-import Checkout from "./components/cart/checkout"; // ⚠️ majuscule cohérente
+import Checkout from "./components/cart/Checkout"; // ✅ majuscule cohérente
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
@@ -19,12 +19,23 @@ import EditProductPage from "./components/admin/EditProductPage";
 import OrderManagement from "./components/admin/OrderManagement";
 import ProtectRoute from "./components/common/ProtectRoute";
 import Invoice from "./components/cart/Invoice";
-import WhatsAppButton from "./components/common/whatsAppButton";
-import ScrollToTop from "./components/common/ScrollToTop"
+import WhatsAppButton from "./components/common/WhatsAppButton"; // ✅ cohérence
+import ScrollToTop from "./components/common/ScrollToTop";
 
-
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import store from "../redux/store";
+import { useEffect } from "react";
+import { clearCart } from "../redux/slice/cartSlice"; // ✅ action pour vider le panier
+
+// ✅ Composant wrapper pour vider le panier au chargement
+const ResetCartOnLoad = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(clearCart());
+    localStorage.removeItem("cart"); // supprime aussi du localStorage si utilisé
+  }, [dispatch]);
+  return null;
+};
 
 const App = () => {
   return (
@@ -32,6 +43,7 @@ const App = () => {
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Toaster position="top-right" />
         <ScrollToTop />
+        <ResetCartOnLoad /> {/* ✅ vide le panier à chaque ouverture */}
         <Routes>
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Home />} />
@@ -40,8 +52,8 @@ const App = () => {
             <Route path="profile" element={<Profile />} />
             <Route path="collections/:collection" element={<CollectionPage />} />
             <Route path="product/:id" element={<ProductDetails />} />
-            <Route path="checkout" element={<Checkout />} /> {/* ✅ corrigé */}
-            <Route path="invoice/:id" element={<Invoice />} /> {/* ✅ corrigé */}
+            <Route path="checkout" element={<Checkout />} />
+            <Route path="invoice/:id" element={<Invoice />} />
             <Route path="order-confirmation" element={<OrderConfirmationPage />} />
             <Route path="order/:id" element={<OrderDetailsPage />} />
             <Route path="my-orders" element={<MyOrdersPage />} />
@@ -62,8 +74,7 @@ const App = () => {
             <Route path="orders" element={<OrderManagement />} />
           </Route>
         </Routes>
-         <WhatsAppButton />
-        
+        <WhatsAppButton /> {/* ✅ bouton toujours visible */}
       </BrowserRouter>
     </Provider>
   );
