@@ -150,16 +150,14 @@ const Checkout = () => {
               <option value="">-- Sélectionnez une région --</option>
               <option value="Douala">Douala</option>
               <option value="Yaoundé">Yaoundé</option>
-              <option value="Adamaoua">Adamaoua</option>
-              <option value="Centre">Centre</option>
-              <option value="Est">Est</option>
-              <option value="Extrême-Nord">Extrême-Nord</option>
-              <option value="Littoral">Littoral</option>
-              <option value="Nord">Nord</option>
-              <option value="Nord-Ouest">Nord-Ouest</option>
-              <option value="Ouest">Ouest</option>
-              <option value="Sud">Sud</option>
-              <option value="Sud-Ouest">Sud-Ouest</option>
+              <option value="Adamaoua">Ngaroundere</option>
+              <option value="Est">bertoa</option>
+              <option value="Extrême-Nord">Maroua</option
+              <option value="Nord">Garoua</option>
+              <option value="Nord-Ouest">Bamenda</option>
+              <option value="Ouest">Bafoussam</option>
+              <option value="Sud">Ebolowa</option>
+              <option value="Sud-Ouest">Buea</option>
             </select>
           </div>
 
