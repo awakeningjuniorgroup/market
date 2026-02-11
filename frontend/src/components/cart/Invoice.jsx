@@ -39,24 +39,24 @@ const Invoice = () => {
         <p><strong>Heure :</strong> {time}</p>
 
         <h3 className="text-lg mt-6 mb-2">Coordonnées client</h3>
-        <p>{checkout.shippingAddress.firstName}</p>
-        <p>{checkout.shippingAddress.phone}</p>
-        <p>{checkout.shippingAddress.quarter} - {checkout.shippingAddress.city} </p>
-        <p>{checkout.shippingAddress.country}</p>
+        <p> Firstname: {checkout.shippingAddress.firstName}</p>
+        <p> Phone: {checkout.shippingAddress.phone}</p>
+        <p>location:  {checkout.shippingAddress.quarter} - {checkout.shippingAddress.city} </p>
+        <p>country:  {checkout.shippingAddress.country}</p>
 
         <h3 className="text-lg mt-6 mb-2">Produits</h3>
         <div className="border-t py-4">
           {checkout.checkoutItems.map((item, index) => (
             <div key={index} className="flex justify-between border-b py-2">
               <span>{item.name} (x{item.quantity})</span>
-              <span>{item.price?.toLocaleString()} FCFA</span>
+              <span> {item.price?.toLocaleString()} FCFA</span>
             </div>
           ))}
         </div>
 
         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
           <p>Total</p>
-          <p>{checkout.totalPrice?.toLocaleString()} FCFA</p>
+          <p> {checkout.totalPrice?.toLocaleString()} FCFA</p>
         </div>
 
         <p className="mt-6 text-center text-green-600 font-semibold">
