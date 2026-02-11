@@ -77,12 +77,12 @@ const handleBuyNow = async () => {
       country: "*"
     },
 
-    paymentMethod: "pending",
+ paymentMethod: user?._id ? "pending" : "COD",
     totalPrice: (selectedProduct?.discountPrice || selectedProduct?.price) * quantity,
   };
 
   try {
-    const res = user
+    const res = user?._id
       ? await dispatch(createCheckout(payload)).unwrap()
       : await dispatch(createGuestCheckout(payload)).unwrap();
 
