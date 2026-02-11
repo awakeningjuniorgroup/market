@@ -32,7 +32,6 @@ const App = () => {
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Toaster position="top-right" />
         <ScrollToTop />
-        <ResetCartOnLoad /> {/* ✅ vide le panier à chaque ouverture */}
         <Routes>
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Home />} />
