@@ -69,6 +69,8 @@ const Checkout = () => {
 
   const handleCreateCheckout = async (e) => {
     e.preventDefault();
+    // Vérification simple 
+    for (const [key, value] of Object.entries(shippingAddress)) { if (!value.trim()) { alert(`Le champ ${key} est requis`); return; } }
 
     const payload = {
       checkoutItems: cart.products,
