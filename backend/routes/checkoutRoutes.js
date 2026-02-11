@@ -23,7 +23,7 @@ router.post("/", protect, async (req, res) => {
     return res.status(400).json({ message: "No items in checkout" });
   }
 
-  if (!shippingAddress?.firstName || !shippingAddress?.lastName || !shippingAddress?.email || !shippingAddress?.phone || !shippingAddress?.city || !shippingAddress?.country) {
+  if (!shippingAddress?.firstName || !shippingAddress?.phone || !shippingAddress?.city || !shippingAddress?.country || !shippingAddress?.quarter) {
     return res.status(400).json({ message: "Missing required shipping fields" });
   }
 
@@ -63,7 +63,7 @@ router.post("/guest", async (req, res) => {
     return res.status(400).json({ message: "No items in checkout" });
   }
 
-  if (!shippingAddress?.firstName || !shippingAddress?.lastName || !shippingAddress?.email || !shippingAddress?.phone || !shippingAddress?.city || !shippingAddress?.country) {
+  if (!shippingAddress?.firstName ||  !shippingAddress?.phone || !shippingAddress?.city || !shippingAddress?.country || !shippingAddress?.quarter) {
     return res.status(400).json({ message: "Missing required shipping fields" });
   }
 
