@@ -7,7 +7,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import CollectionPage from "./pages/CollectionPage";
 import ProductDetails from "./components/products/ProductDetails";
-import Checkout from "./components/cart/Checkout"; // ✅ majuscule cohérente
+import Checkout from "./components/cart/checkout"; // ✅ majuscule cohérente
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import MyOrdersPage from "./pages/MyOrdersPage";
@@ -19,7 +19,7 @@ import EditProductPage from "./components/admin/EditProductPage";
 import OrderManagement from "./components/admin/OrderManagement";
 import ProtectRoute from "./components/common/ProtectRoute";
 import Invoice from "./components/cart/Invoice";
-import WhatsAppButton from "./components/common/WhatsAppButton"; // ✅ cohérence
+import WhatsAppButton from "./components/common/whatsAppButton";//✅ cohérence
 import ScrollToTop from "./components/common/ScrollToTop";
 
 import { Provider, useDispatch } from "react-redux";
