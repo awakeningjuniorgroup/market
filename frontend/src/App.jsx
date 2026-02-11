@@ -30,6 +30,7 @@ const App = () => {
     <Provider store={store}>
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Toaster position="top-right" />
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<UserLayout />}>
             <Route index element={<Home />} />
@@ -61,6 +62,7 @@ const App = () => {
           </Route>
         </Routes>
          <WhatsAppButton />
+        
       </BrowserRouter>
     </Provider>
   );
