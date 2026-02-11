@@ -22,20 +22,9 @@ import Invoice from "./components/cart/Invoice";
 import WhatsAppButton from "./components/common/whatsAppButton";//✅ cohérence
 import ScrollToTop from "./components/common/ScrollToTop";
 
-import { Provider, useDispatch } from "react-redux";
-import store from "../redux/store";
-import { useEffect } from "react";
-import { clearCart } from "../slice/cartSlice"; // ✅ action pour vider le panier
+import { Provider} from "react-redux";
+import store from "../redux/store"; 
 
-// ✅ Composant wrapper pour vider le panier au chargement
-const ResetCartOnLoad = () => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(clearCart());
-    localStorage.removeItem("cart"); // supprime aussi du localStorage si utilisé
-  }, [dispatch]);
-  return null;
-};
 
 const App = () => {
   return (
