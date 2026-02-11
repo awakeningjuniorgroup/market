@@ -277,7 +277,7 @@ const handleBuyNow = async (e) => {
                 >
                   Buy Now
                 </button>
-              <div/>
+            </div>
 
 
               <div className="mt-10 text-gray-700">
