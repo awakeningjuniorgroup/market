@@ -107,7 +107,7 @@ const Footer = () => {
                     <p className="text-gray-500">Call Us</p>
                     <p>
                         <TbFilePhone className="inline-block mr-2" />
-                        (+237) 672030842
+                        (+237) 681423149
                     </p>
                 </div>
         </div>
