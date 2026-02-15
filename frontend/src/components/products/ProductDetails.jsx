@@ -89,10 +89,10 @@ const handleBuyNow = async (e) => {
       ? await dispatch(createCheckout(payload)).unwrap()
       : await dispatch(createGuestCheckout(payload)).unwrap();
 
-    if (res._id) {
+    
       // ✅ Redirection directe vers la page checkout
       navigate("/checkout");
-    }
+    
   } catch (err) {
     toast.error(err.message || "Failed to create checkout", { duration: 1000 });
   }
