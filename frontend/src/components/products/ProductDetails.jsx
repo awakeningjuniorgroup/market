@@ -4,6 +4,7 @@ import ProductGrid from "./ProductGrid";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import {
   fetchProductDetails,
   fetchSimilarProducts,
@@ -269,16 +270,19 @@ const handleBuyNow = async (e) => {
                 {isButtonDisabled ? "Adding..." : "Add to Cart"}
               </button>
             <div>
-                <button
-                  onClick={handleBuyNow}
-                  type="button"
-                  disabled={isButtonDisabled}
+               <Link to={isButtonDisabled ? "#" : "/checkout"} // ✅ évite la navigation si désactivé onClick={(e) => {
+                    if (isButtonDisabled) {
+                      e.preventDefault(); // bloque le clic
+                      return;
+                    }
+                    handleBuyNow(e);
+                  }}
                   className={`bg-red-600 text-white py-2 px-6 rounded w-full mb-4 ${
-                    isButtonDisabled ? "cursor-not-allowed opacity-50" : "hover:bg-red-700"
+                    isButtonDisabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "hover:bg-red-700"
                   }`}
                 >
                   Buy Now
-                </button>
+              </Link>
             </div>
 
 
