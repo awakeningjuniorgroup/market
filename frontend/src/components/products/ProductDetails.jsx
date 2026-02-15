@@ -52,7 +52,9 @@ const ProductDetails = ({ productId }) => {
   
 const navigate = useNavigate();
 const handleBuyNow = async (e) => {
-  if (e && e.preventDefault) e.preventDefault();e?.stopPropagation();
+  e.preventDefault();
+  e?.stopPropagation();
+
   if (!selectedSize || !selectedColor) {
     toast.error("Please select a size and a color before buying.", { duration: 1000 });
     return;
@@ -89,7 +91,7 @@ const handleBuyNow = async (e) => {
 
     if (res._id) {
       // ✅ Redirection directe vers la page checkout
-      navigate(`/checkout`);
+      navigate("/checkout");
     }
   } catch (err) {
     toast.error(err.message || "Failed to create checkout", { duration: 1000 });
@@ -269,7 +271,7 @@ const handleBuyNow = async (e) => {
             <div>
                 <button
                   onClick={handleBuyNow}
-                  type="submit"
+                  type="button"
                   disabled={isButtonDisabled}
                   className={`bg-red-600 text-white py-2 px-6 rounded w-full mb-4 ${
                     isButtonDisabled ? "cursor-not-allowed opacity-50" : "hover:bg-red-700"
