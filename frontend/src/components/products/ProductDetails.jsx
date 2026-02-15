@@ -270,19 +270,22 @@ const handleBuyNow = async (e) => {
                 {isButtonDisabled ? "Adding..." : "Add to Cart"}
               </button>
             <div>
-               <Link to={isButtonDisabled ? "#" : "/checkout"} // ✅ évite la navigation si désactivé onClick={(e) => {
-                    if (isButtonDisabled) {
-                      e.preventDefault(); // bloque le clic
-                      return;
-                    }
-                    handleBuyNow(e);
-                  }}
-                  className={`bg-red-600 text-white py-2 px-6 rounded w-full mb-4 ${
-                    isButtonDisabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "hover:bg-red-700"
-                  }`}
-                >
-                  Buy Now
-              </Link>
+               <Link
+                    to={isButtonDisabled ? "#" : "/checkout"}
+                    onClick={(e) => {
+                      if (isButtonDisabled) {
+                        e.preventDefault(); // bloque la navigation
+                        return;
+                      }
+                      handleBuyNow(e);
+                    }}
+                    className={`bg-red-600 text-white py-2 px-6 rounded w-full mb-4 ${
+                      isButtonDisabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "hover:bg-red-700"
+                    }`}
+                  >
+                    Buy Now
+               </Link>
+
             </div>
 
 
