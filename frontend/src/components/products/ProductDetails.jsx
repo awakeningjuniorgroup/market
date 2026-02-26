@@ -95,6 +95,9 @@ const handleBuyNow = async (e) => {
       console.log("✅ Checkout créé:", result);
     
       toast.success("Checkout created!", { duration: 1000 });
+        console.log("➡️ Navigation vers /checkout");
+        navigate("/checkout");
+
       navigate("/checkout"); // attention à la casse : route en minuscule
     } catch (err) {
       console.error("❌ Erreur checkout:", err);
