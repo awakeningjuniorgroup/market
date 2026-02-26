@@ -53,7 +53,7 @@ const Invoice = () => {
         {/* Frais de livraison affichés séparément */}
         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
           <p>Frais de livraison</p>
-          <p>{checkout.shippingFee?.toLocaleString()} FCFA</p>
+         <p>{shippingAddress.shippingFee?.toLocaleString()} FCFA</p>
         </div>
 
         {/* Total sans inclure les frais */}
