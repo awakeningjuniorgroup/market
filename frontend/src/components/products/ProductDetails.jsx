@@ -134,6 +134,7 @@ const handleAddToCart = (e) => {
   )
     .then(() => {
       toast.success("Product added to cart!", { duration: 1000 });
+       navigate("/checkout");
     })
     .catch(() => {
       toast.error("Failed to add product.", { duration: 1000 });
