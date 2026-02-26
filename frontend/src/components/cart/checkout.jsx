@@ -46,6 +46,44 @@ const CashOnDeliveryButton = ({ checkoutId }) => {
   );
 };
 
+// ✅ Grille des frais de livraison
+const villesAvecFrais = {
+  "Yaoundé": 0,
+  "Mbalmayo": 1000,
+  "Obala": 1000,
+  "Monatele": 1000,
+  "Douala": 0,
+  "Nkongsamba": 1000,
+  "Edéa": 1000,
+  "Loum": 1500,
+  "Bafoussam": 1000,
+  "Dschang": 1000,
+  "Mbouda": 1000,
+  "Foumban": 1000,
+  "Bangangté": 1000,
+  "Bafang": 1000,
+  "Bamenda": 1500,
+  "Buea": 1000,
+  "Limbe": 1000,
+  "Kumba": 1000,
+  "Mamfe": 1000,
+  "Tiko": 2000,
+  "Ngaoundéré": 4000,
+  "Meiganga": 4000,
+  "Garoua": 5000,
+  "Maroua": 6000,
+  "Kousséri": 6000,
+  "Mokolo": 6000,
+  "Kaélé": 6000,
+  "Bertoua": 3000,
+  "Batouri": 3000,
+  "Abong-Mbang": 3000,
+  "Ebolowa": 2000,
+  "Kribi": 1000,
+  "Sangmélima": 1000,
+  "Ambam": 2000,
+};
+
 const Checkout = () => {
   const [checkoutId, setCheckoutId] = useState(null);
   const navigate = useNavigate();
@@ -59,6 +97,7 @@ const Checkout = () => {
     city: "",
     country: "",
     phone: "",
+    shippingFee: 0,
   });
 
   useEffect(() => {
@@ -70,9 +109,8 @@ const Checkout = () => {
   const handleCreateCheckout = async (e) => {
     e.preventDefault();
 
-    // Vérification simple
     for (const [key, value] of Object.entries(shippingAddress)) {
-      if (!value.trim()) {
+      if (!value.toString().trim() && key !== "shippingFee") {
         alert(`Le champ ${key} est requis`);
         return;
       }
@@ -82,7 +120,7 @@ const Checkout = () => {
       checkoutItems: cart.products,
       shippingAddress,
       paymentMethod: user?.id ? "pending" : "COD",
-      totalPrice: cart.totalPrice,
+      totalPrice: cart.totalPrice + (shippingAddress.shippingFee || 0),
     };
 
     const res = user?._id
@@ -136,53 +174,26 @@ const Checkout = () => {
             />
           </div>
 
-          {/* city avec menu déroulant */}
+          {/* city */}
           <div className="mb-4">
             <label className="block text-gray-700 capitalize">city</label>
             <select
               value={shippingAddress.city}
-              onChange={(e) =>
-                setShippingAddress({ ...shippingAddress, city: e.target.value })
-              }
+              onChange={(e) => {
+                const selectedCity = e.target.value;
+                setShippingAddress({
+                  ...shippingAddress,
+                  city: selectedCity,
+                  shippingFee: villesAvecFrais[selectedCity] || 0,
+                });
+              }}
               className="w-full p-2 border rounded"
               required
             >
-              <option value="">-- Sélectionnez une région --</option>
               <option value="">Sélectionnez une ville</option>
-              <option value="Yaoundé">Yaoundé</option>
-              <option value="Mbalmayo">Mbalmayo</option>
-              <option value="Obala">Obala</option>
-              <option value="Monatele">Monatele</option>
-              <option value="Douala">Douala</option>
-              <option value="Nkongsamba">Nkongsamba</option>
-              <option value="Edéa">Edéa</option>
-              <option value="Loum">Loum</option>
-              <option value="Bafoussam">Bafoussam</option>
-              <option value="Dschang">Dschang</option>
-              <option value="Mbouda">Mbouda</option>
-              <option value="Foumban">Foumban</option>
-              <option value="Bangangté">Bangangté</option>
-              <option value="Bafang">Bafang</option>
-              <option value="Bamenda">Bamenda</option>
-              <option value="Buea">Buea</option>
-              <option value="Limbe">Limbe</option>
-              <option value="Kumba">Kumba</option>
-              <option value="Mamfe">Mamfe</option>
-              <option value="Tiko">Tiko</option>
-              <option value="Ngaoundéré">Ngaoundéré</option>
-              <option value="Meiganga">Meiganga</option>
-              <option value="Garoua">Garoua</option>
-              <option value="Maroua">Maroua</option>
-              <option value="Kousséri">Kousséri</option>
-              <option value="Mokolo">Mokolo</option>
-              <option value="Kaélé">Kaélé</option>
-              <option value="Bertoua">Bertoua</option>
-              <option value="Batouri">Batouri</option>
-              <option value="Abong-Mbang">Abong-Mbang</option>
-              <option value="Ebolowa">Ebolowa</option>
-              <option value="Kribi">Kribi</option>
-              <option value="Sangmélima">Sangmélima</option>
-              <option value="Ambam">Ambam</option>
+              {Object.keys(villesAvecFrais).map((ville) => (
+                <option key={ville} value={ville}>{ville}</option>
+              ))}
             </select>
           </div>
 
@@ -211,7 +222,7 @@ const Checkout = () => {
               }
               className="w-full p-2 border rounded"
               required
-              pattern="[0-9]{8,}" // au moins 8 chiffres
+              pattern="[0-9]{8,}"
             />
           </div>
 
@@ -228,16 +239,12 @@ const Checkout = () => {
                 <div className="text-lg mb-4">Check your payment </div>
                 <div className="flex flex-col gap-4">
                   <PayPalButton
-                    amount={cart.totalPrice}
+                    amount={cart.totalPrice + (shippingAddress.shippingFee || 0)}
                     onSuccess={handlePaymentSuccess}
                     onError={() => alert("Paiement échoué. Réessayez.")}
                   />
-                  <OrangeMoneyButton amount={cart.totalPrice} />
-
-                  {/* ✅ COD seulement si Douala ou Yaoundé */}
-                  {["Douala", "Yaoundé"].includes(shippingAddress.city) && (
-                    <CashOnDeliveryButton checkoutId={checkoutId} />
-                  )}
+                  <OrangeMoneyButton amount={cart.totalPrice + (shippingAddress.shippingFee || 0)} />
+                  <CashOnDeliveryButton checkoutId={checkoutId} />
                 </div>
               </div>
             )}
