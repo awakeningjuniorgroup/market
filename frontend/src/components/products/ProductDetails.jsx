@@ -92,7 +92,6 @@ const handleBuyNow = async (e) => {
     const action = user?._id ? createCheckout(payload) : createGuestCheckout(payload);
     console.log("🚀 Dispatch action:", action);
     await dispatch(action).unwrap();
-      console.log("✅ Checkout créé:", result);
     toast.success("Checkout created!", { duration: 1000 });
     navigate("/checkout"); // ✅ redirection uniquement après succès
   } catch (err) {
