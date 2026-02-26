@@ -30,7 +30,8 @@ router.post("/", protect, async (req, res) => {
         phone: shippingAddress.phone || "",
         quarter: shippingAddress.quarter || "",
         city: shippingAddress.city || "",
-        country: shippingAddress.country || ""
+        country: shippingAddress.country || "",
+        shippingFee: shippingAddress.shippingFee || ""
       },
       paymentMethod: method,
       totalPrice,
@@ -67,7 +68,8 @@ router.post("/guest", async (req, res) => {
         phone: shippingAddress.phone || "",
         quarter: shippingAddress.quarter || "",
         city: shippingAddress.city || "",
-        country: shippingAddress.country || ""
+        country: shippingAddress.country || "",
+        shippingFee: shippingAddress.shippingFee || ""
       },
       paymentMethod: method,
       totalPrice,
