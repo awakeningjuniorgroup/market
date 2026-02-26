@@ -261,10 +261,10 @@ const Checkout = () => {
               <img src={product.image} alt={product.name} className="w-20 h-24 object-cover" />
               <div>
                 <h3 className="text-md">{product.name}</h3>
-                <p className="text-gray-500">Size {product.size}</p>
-                <p className="text-gray-500">Color {product.color}</p>
-                <p className="text-gray-500">Quantity {product.quantity}</p>
-                 <p className="text-gray-500">Shpping Fees {product.shippingFee}</p>
+                <p className="text-gray-500">Size: {product.size}</p>
+                <p className="text-gray-500">Color: {product.color}</p>
+                <p className="text-gray-500">Quantity: {product.quantity}</p>
+                 <p className="text-gray-500">Shpping Fees: {product.shippingFee}</p>
               </div>
               <p className="text-xl">{product.price?.toLocaleString()} FCFA</p>
             </div>
