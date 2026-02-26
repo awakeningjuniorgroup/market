@@ -46,12 +46,12 @@ const Invoice = () => {
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded">
       <div id="invoice-content">
-        <h2 className="text-2xl font-bold mb-4">Facture</h2>
+        <h2 className="text-2xl font-bold mb-4">Bill</h2>
         <p><strong>Commande ID :</strong> {checkout._id}</p>
         <p><strong>Date :</strong> {date}</p>
-        <p><strong>Heure :</strong> {time}</p>
+        <p><strong>Time :</strong> {time}</p>
 
-        <h3 className="text-lg mt-6 mb-2">Coordonnées client</h3>
+        <h3 className="text-lg mt-6 mb-2">Coordonnate</h3>
         <p>Firstname: {checkout.shippingAddress.firstName}</p>
         <p>Phone: {checkout.shippingAddress.phone}</p>
         <p>Location: {checkout.shippingAddress.quarter} - {checkout.shippingAddress.city}</p>
@@ -82,7 +82,7 @@ const Invoice = () => {
         </div>
 
         <p className="mt-6 text-center text-green-600 font-semibold">
-          ✅ Paiement à la livraison — Merci pour votre commande !
+          ✅ Thanks for order!
         </p>
 
         {/* QR Code vers ton site */}
