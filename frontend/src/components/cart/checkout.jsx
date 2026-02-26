@@ -266,7 +266,7 @@ const Checkout = () => {
                 <p className="text-gray-500">Quantity: {product.quantity}</p>
                  <p className="text-gray-500">Shipping Fee: {product.shippingFee}</p>
               </div>
-              <p className="text-xl">{product.price?.toLocaleString()} FCFA</p>
+              <p className="text-xl">{shippingAddress.shippingFee?.toLocaleString()} FCFA</p>
             </div>
           ))}
         </div>
