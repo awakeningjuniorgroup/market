@@ -275,15 +275,8 @@ const handleAddToCart = (e) => {
                 {isButtonDisabled ? "Adding..." : "Add to Cart"}
               </button>
             <div>
-               <Link
-                    to={isButtonDisabled ? "#" : "/checkout"}
-                    onClick={(e) => {
-                      if (isButtonDisabled) {
-                        e.preventDefault(); // bloque la navigation
-                        return;
-                      }
-                      handleBuyNow(e);
-                    }}
+               <button
+                   onClick={handleBuyNow}
                     className={`bg-red-600 text-white py-2 px-6 rounded w-full mb-4 ${
                       isButtonDisabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "hover:bg-red-700"
                     }`}
