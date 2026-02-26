@@ -14,17 +14,33 @@ const Invoice = () => {
 
   const handleDownload = async () => {
     const invoiceElement = document.getElementById("invoice-content");
-    const canvas = await html2canvas(invoiceElement);
+    const canvas = await html2canvas(invoiceElement, { scale: 2 }); // meilleure qualité
     const imgData = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF("p", "mm", "a4");
-    const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pdfWidth;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    // Première page
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight;
+
+    // Pages suivantes si nécessaire
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+    }
+
     pdf.save(`facture-${checkout._id}.pdf`);
-    console.log(payload);
   };
 
   return (
@@ -52,20 +68,21 @@ const Invoice = () => {
         </div>
 
         {/* Frais de livraison affichés séparément */}
-         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
-          <p>Shipping fee</p>
+        <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
+          <p>Frais de livraison</p>
           <p>{checkout.shippingAddress.shippingFee?.toLocaleString()} FCFA</p>
         </div>
-        
 
-        {/* Total sans inclure les frais */}
+        {/* Total incluant les frais */}
         <div className="flex justify-between items-center text-lg mt-2 border-t pt-4 font-bold">
           <p>Total</p>
-          <p>{checkout.totalPrice?.toLocaleString()} FCFA</p>
+          <p>
+            {(checkout.totalPrice + (checkout.shippingAddress.shippingFee || 0)).toLocaleString()} FCFA
+          </p>
         </div>
 
         <p className="mt-6 text-center text-green-600 font-semibold">
-          ✅ thanks for order !
+          ✅ Paiement à la livraison — Merci pour votre commande !
         </p>
 
         {/* QR Code vers ton site */}
