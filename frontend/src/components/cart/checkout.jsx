@@ -264,15 +264,17 @@ const Checkout = () => {
                 <p className="text-gray-500">Size: {product.size}</p>
                 <p className="text-gray-500">Color: {product.color}</p>
                 <p className="text-gray-500">Quantity: {product.quantity}</p>
-                 <p className="text-gray-500">Shipping Fee: {shippingAddress.shippingFee?.toLocaleString()} FCFA</p>
               </div>
               <p className="text-xl">{product.price} FCFA</p>
             </div>
           ))}
         </div>
+        <div className="flex justify-between items-center text-lg mt-4"> 
+          <p>Frais de livraison</p> <p>{shippingAddress.shippingFee?.toLocaleString()} FCFA</p> </div>
+        
         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
           <p>Total</p>
-          <p>{cart.totalPrice?.toLocaleString() + shippingAddress.shippingFee?.toLocaleString() } FCFA</p>
+          <p>{cart.totalPrice?.toLocaleString()} + {shippingAddress.shippingFee?.toLocaleString() } FCFA</p>
         </div>
       </div>
     </div>
