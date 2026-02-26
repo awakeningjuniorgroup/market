@@ -282,7 +282,7 @@ const handleAddToCart = (e) => {
                     }`}
                   >
                     Buy Now
-               </Link>
+               </button>
 
             </div>
 
