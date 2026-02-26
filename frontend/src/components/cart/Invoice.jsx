@@ -69,7 +69,7 @@ const Invoice = () => {
         {/* QR Code vers ton site */}
         <div className="mt-6 flex justify-center">
           <QRCodeCanvas 
-            value="https://ton-site.com" 
+            value="https://kams-market12.onrender.com" 
             size={128} 
             bgColor="#ffffff" 
             fgColor="#000000" 
