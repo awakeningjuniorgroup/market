@@ -52,9 +52,10 @@ const Invoice = () => {
 
         {/* Frais de livraison affichés séparément */}
          <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
-          <p>Frais de livraison</p>
+          <p>Shipping fee</p>
           <p>{checkout.shippingAddress.shippingFee?.toLocaleString()} FCFA</p>
         </div>
+        console.log(payload);
 
         {/* Total sans inclure les frais */}
         <div className="flex justify-between items-center text-lg mt-2 border-t pt-4 font-bold">
@@ -63,7 +64,7 @@ const Invoice = () => {
         </div>
 
         <p className="mt-6 text-center text-green-600 font-semibold">
-          ✅ Paiement à la livraison — Merci pour votre commande !
+          ✅ thanks for order !
         </p>
 
         {/* QR Code vers ton site */}
