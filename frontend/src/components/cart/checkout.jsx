@@ -122,7 +122,7 @@ const Checkout = () => {
       paymentMethod: user?.id ? "pending" : "COD",
       totalPrice: cart.totalPrice + (shippingAddress.shippingFee || 0),
     };
-
+    console.log(payload);
     const res = user?._id
       ? await dispatch(createCheckout(payload))
       : await dispatch(createGuestCheckout(payload));
