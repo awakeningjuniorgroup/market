@@ -148,16 +148,41 @@ const Checkout = () => {
               required
             >
               <option value="">-- Sélectionnez une région --</option>
-              <option value="Douala">Douala</option>
+              <option value="">Sélectionnez une ville</option>
               <option value="Yaoundé">Yaoundé</option>
-              <option value="Adamaoua">Ngaroundere</option>
-              <option value="Est">Bertoua</option>
-              <option value="Extrême-Nord">Maroua</option>
-              <option value="Nord">Garoua</option>
-              <option value="Nord-Ouest">Bamenda</option>
-              <option value="Ouest">Bafoussam</option>
-              <option value="Sud">Ebolowa</option>
-              <option value="Sud-Ouest">Buea</option>
+              <option value="Mbalmayo">Mbalmayo</option>
+              <option value="Obala">Obala</option>
+              <option value="Monatele">Monatele</option>
+              <option value="Douala">Douala</option>
+              <option value="Nkongsamba">Nkongsamba</option>
+              <option value="Edéa">Edéa</option>
+              <option value="Loum">Loum</option>
+              <option value="Bafoussam">Bafoussam</option>
+              <option value="Dschang">Dschang</option>
+              <option value="Mbouda">Mbouda</option>
+              <option value="Foumban">Foumban</option>
+              <option value="Bangangté">Bangangté</option>
+              <option value="Bafang">Bafang</option>
+              <option value="Bamenda">Bamenda</option>
+              <option value="Buea">Buea</option>
+              <option value="Limbe">Limbe</option>
+              <option value="Kumba">Kumba</option>
+              <option value="Mamfe">Mamfe</option>
+              <option value="Tiko">Tiko</option>
+              <option value="Ngaoundéré">Ngaoundéré</option>
+              <option value="Meiganga">Meiganga</option>
+              <option value="Garoua">Garoua</option>
+              <option value="Maroua">Maroua</option>
+              <option value="Kousséri">Kousséri</option>
+              <option value="Mokolo">Mokolo</option>
+              <option value="Kaélé">Kaélé</option>
+              <option value="Bertoua">Bertoua</option>
+              <option value="Batouri">Batouri</option>
+              <option value="Abong-Mbang">Abong-Mbang</option>
+              <option value="Ebolowa">Ebolowa</option>
+              <option value="Kribi">Kribi</option>
+              <option value="Sangmélima">Sangmélima</option>
+              <option value="Ambam">Ambam</option>
             </select>
           </div>
 
