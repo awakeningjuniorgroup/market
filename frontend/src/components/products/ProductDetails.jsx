@@ -265,6 +265,8 @@ const handleAddToCart = (e) => {
               <button
                 onClick={handleAddToCart}
                 type="button"
+                id="addToCartButton" 
+                name="addToCartButton"
                 disabled={isButtonDisabled}
                 className={`bg-black text-white py-2 px-6 rounded w-full mb-4 ${
                   isButtonDisabled
@@ -277,6 +279,8 @@ const handleAddToCart = (e) => {
             <div>
                <button
                    type="button"
+                 id="buyNowButton" 
+                 name="buyNowButton"
                    onClick={handleBuyNow}
                     className={`bg-red-600 text-white py-2 px-6 rounded w-full mb-4 ${
                       isButtonDisabled ? "cursor-not-allowed opacity-50 pointer-events-none" : "hover:bg-red-700"
