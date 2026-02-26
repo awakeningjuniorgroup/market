@@ -55,7 +55,7 @@ const handleBuyNow = async (e) => {
   e.preventDefault();
   e.stopPropagation();
   setIsButtonDisabled(true);
-   console.log("👉 handleBuyNow déclenché");
+   
 
   if (!selectedSize || !selectedColor) {
     toast.error("Please select a size and a color before buying.", { duration: 1000 });
@@ -85,18 +85,18 @@ const handleBuyNow = async (e) => {
     paymentMethod: user?._id ? "pending" : "COD",
     totalPrice: (selectedProduct?.discountPrice || selectedProduct?.price) * quantity,
   };
-  console.log("📦 Payload envoyé:", payload);
+ 
 
       try {
       const action = user?._id ? createCheckout(payload) : createGuestCheckout(payload);
-      console.log("🚀 Dispatch action:", action);
+    
     
       const result = await dispatch(action).unwrap(); // ✅ résultat stocké
-      console.log("✅ Checkout créé:", result);
+    
     
       toast.success("Checkout created!", { duration: 1000 });
         navigate("/checkout");
-         console.log("➡️ Navigation vers /checkout");
+         
 
       navigate("/checkout"); // attention à la casse : route en minuscule
     } catch (err) {
