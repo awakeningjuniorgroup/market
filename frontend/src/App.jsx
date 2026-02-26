@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import UserLayout from "./components/layout/UserLayout";
 import Home from "./pages/Home";
 import { Toaster } from "sonner";
@@ -29,7 +29,7 @@ import store from "../redux/store";
 const App = () => {
   return (
     <Provider store={store}>
-      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+      <HashRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <Toaster position="top-right" />
         <ScrollToTop />
         <Routes>
@@ -63,7 +63,7 @@ const App = () => {
           </Route>
         </Routes>
         <WhatsAppButton /> {/* ✅ bouton toujours visible */}
-      </BrowserRouter>
+      </HashRouter>
     </Provider>
   );
 };
