@@ -24,6 +24,7 @@ const Invoice = () => {
 
     pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
     pdf.save(`facture-${checkout._id}.pdf`);
+    console.log(payload);
   };
 
   return (
@@ -55,7 +56,7 @@ const Invoice = () => {
           <p>Shipping fee</p>
           <p>{checkout.shippingAddress.shippingFee?.toLocaleString()} FCFA</p>
         </div>
-        console.log(payload);
+        
 
         {/* Total sans inclure les frais */}
         <div className="flex justify-between items-center text-lg mt-2 border-t pt-4 font-bold">
