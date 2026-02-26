@@ -284,10 +284,10 @@ const handleAddToCart = (e) => {
                     : "hover:bg-gray-900"
                 }`}
               >
-                {isButtonDisabled ? "Adding..." : "Add to Cart"}
+                {isButtonDisabled ? "Adding..." : "Buy now"}
               </button>
             <div>
-               <button
+               {/* <button
                    type="button"
                  id="buyNowButton" 
                  name="buyNowButton"
@@ -297,7 +297,7 @@ const handleAddToCart = (e) => {
                     }`}
                   >
                     Buy Now
-               </button>
+               </button> */}
 
             </div>
 
