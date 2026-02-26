@@ -76,11 +76,11 @@ const handleBuyNow = async (e) => {
       },
     ],
     shippingAddress: {
-      firstName: "",
-      phone: "",
-      quarter: "",
-      city: "",
-      country: ""
+      firstName: "*",
+      phone: "*",
+      quarter: "*",
+      city: "*",
+      country: "*"
     },
     paymentMethod: user?._id ? "pending" : "COD",
     totalPrice: (selectedProduct?.discountPrice || selectedProduct?.price) * quantity,
