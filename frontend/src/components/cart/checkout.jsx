@@ -274,7 +274,7 @@ const Checkout = () => {
         
         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
           <p>Total</p>
-          <p>{cart.totalPrice?.toLocaleString()} + {shippingAddress.shippingFee?.toLocaleString() } FCFA</p>
+          <p>{(cart.totalPrice + (shippingAddress.shippingFee || 0)).toLocaleString()}  FCFA</p>
         </div>
       </div>
     </div>
