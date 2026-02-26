@@ -99,7 +99,7 @@ const handleBuyNow = async (e) => {
   }
 };
 
-};
+
 
 
 const handleAddToCart = (e) => {
