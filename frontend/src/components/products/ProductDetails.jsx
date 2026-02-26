@@ -50,7 +50,6 @@ const ProductDetails = ({ productId }) => {
     if (action === "plus") setQuantity((prev) => prev + 1);
     if (action === "minus" && quantity > 1) setQuantity((prev) => prev - 1);
   };
-  const result = await dispatch(action).unwrap();
 const navigate = useNavigate();
 const handleBuyNow = async (e) => {
   e.preventDefault();
