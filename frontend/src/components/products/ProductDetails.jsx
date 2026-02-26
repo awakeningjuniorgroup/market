@@ -52,16 +52,16 @@ const ProductDetails = ({ productId }) => {
   };
   
 const navigate = useNavigate();
-const handleBuyNow = (e) => {
+const handleBuyNow = async (e) => {
   e.preventDefault();
-  e?.stopPropagation();
+  e.stopPropagation();
+  setIsButtonDisabled(true);
 
   if (!selectedSize || !selectedColor) {
     toast.error("Please select a size and a color before buying.", { duration: 1000 });
+    setIsButtonDisabled(false);
     return;
   }
-
-  setIsButtonDisabled(true);
 
   const payload = {
     checkoutItems: [
@@ -76,30 +76,29 @@ const handleBuyNow = (e) => {
       },
     ],
     shippingAddress: {
-      firstName: "*",
-      phone: "*",
-      quarter: "*",
-      city: "*",
-      country: "*"
+      firstName: "",
+      phone: "",
+      quarter: "",
+      city: "",
+      country: ""
     },
     paymentMethod: user?._id ? "pending" : "COD",
     totalPrice: (selectedProduct?.discountPrice || selectedProduct?.price) * quantity,
   };
 
-  const action = user?._id ? createCheckout(payload) : createGuestCheckout(payload);
+  try {
+    const action = user?._id ? createCheckout(payload) : createGuestCheckout(payload);
+    await dispatch(action).unwrap();
 
-  dispatch(action)
-    .unwrap()
-    .then(() => {
-      toast.success("Checkout created!", { duration: 1000 });
-      navigate("/checkout"); // ✅ redirection après succès
-    })
-    .catch((err) => {
-      toast.error(err.message || "Failed to create checkout", { duration: 1000 });
-    })
-    .finally(() => {
-      setIsButtonDisabled(false);
-    });
+    toast.success("Checkout created!", { duration: 1000 });
+    navigate("/checkout"); // ✅ redirection uniquement après succès
+  } catch (err) {
+    toast.error(err.message || "Failed to create checkout", { duration: 1000 });
+  } finally {
+    setIsButtonDisabled(false);
+  }
+};
+
 };
 
 
