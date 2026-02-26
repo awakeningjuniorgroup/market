@@ -57,7 +57,7 @@ const Invoice = () => {
         <p>Location: {checkout.shippingAddress.quarter} - {checkout.shippingAddress.city}</p>
         <p>Country: {checkout.shippingAddress.country}</p>
 
-        <h3 className="text-lg mt-6 mb-2">Produits</h3>
+        <h3 className="text-lg mt-6 mb-2">Products</h3>
         <div className="border-t py-4">
           {checkout.checkoutItems.map((item, index) => (
             <div key={index} className="flex justify-between border-b py-2">
@@ -69,7 +69,7 @@ const Invoice = () => {
 
         {/* Frais de livraison affichés séparément */}
         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
-          <p>Frais de livraison</p>
+          <p>Shipping fee</p>
           <p>{checkout.shippingAddress.shippingFee?.toLocaleString()} FCFA</p>
         </div>
 
