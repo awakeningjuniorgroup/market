@@ -52,7 +52,7 @@ const ProductDetails = ({ productId }) => {
   };
   
 const navigate = useNavigate();
-const handleBuyNow = async (e) => {
+const handleBuyNow = (e) => {
   e.preventDefault();
   e?.stopPropagation();
 
@@ -60,6 +60,8 @@ const handleBuyNow = async (e) => {
     toast.error("Please select a size and a color before buying.", { duration: 1000 });
     return;
   }
+
+  setIsButtonDisabled(true);
 
   const payload = {
     checkoutItems: [
@@ -74,61 +76,65 @@ const handleBuyNow = async (e) => {
       },
     ],
     shippingAddress: {
-      firstName: "*",
-      phone: "*",
-      quarter: "*",
-      city: "*",
-      country: "*"
+      firstName: "",
+      phone: "",
+      quarter: "",
+      city: "",
+      country: ""
     },
-
- paymentMethod: user?._id ? "pending" : "COD",
+    paymentMethod: user?._id ? "pending" : "COD",
     totalPrice: (selectedProduct?.discountPrice || selectedProduct?.price) * quantity,
   };
 
-  try {
-    const res = user?._id
-      ? await dispatch(createCheckout(payload)).unwrap()
-      : await dispatch(createGuestCheckout(payload)).unwrap();
+  const action = user?._id ? createCheckout(payload) : createGuestCheckout(payload);
 
-    
-      // ✅ Redirection directe vers la page checkout
-      navigate("/checkout");
-    
-  } catch (err) {
-    toast.error(err.message || "Failed to create checkout", { duration: 1000 });
-  }
+  dispatch(action)
+    .unwrap()
+    .then(() => {
+      toast.success("Checkout created!", { duration: 1000 });
+      navigate("/checkout"); // ✅ redirection après succès
+    })
+    .catch((err) => {
+      toast.error(err.message || "Failed to create checkout", { duration: 1000 });
+    })
+    .finally(() => {
+      setIsButtonDisabled(false);
+    });
 };
 
 
-  const handleAddToCart = () => {
-    if (!selectedSize || !selectedColor) {
-      toast.error("Please select a size and a color before adding to cart.", {
-        duration: 1000,
-      });
-      return;
-    }
-    setIsButtonDisabled(true);
+const handleAddToCart = (e) => {
+  e.preventDefault();
+  e?.stopPropagation();
 
-    dispatch(
-      addToCart({
-        productId: productFetchId,
-        quantity,
-        size: selectedSize,
-        color: selectedColor,
-        guestId,
-        userId: user?._id,
-      })
-    )
-      .then(() => {
-        toast.success("Product added to cart!", { duration: 1000 });
-      })
-      .catch(() => {
-        toast.error("Failed to add product.", { duration: 1000 });
-      })
-      .finally(() => {
-        setIsButtonDisabled(false);
-      });
-  };
+  if (!selectedSize || !selectedColor) {
+    toast.error("Please select a size and a color before adding to cart.", { duration: 1000 });
+    return;
+  }
+
+  setIsButtonDisabled(true);
+
+  dispatch(
+    addToCart({
+      productId: productFetchId,
+      quantity,
+      size: selectedSize,
+      color: selectedColor,
+      guestId,
+      userId: user?._id,
+    })
+  )
+    .then(() => {
+      toast.success("Product added to cart!", { duration: 1000 });
+    })
+    .catch(() => {
+      toast.error("Failed to add product.", { duration: 1000 });
+    })
+    .finally(() => {
+      setIsButtonDisabled(false);
+    });
+};
+
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
