@@ -87,17 +87,22 @@ const handleBuyNow = async (e) => {
   };
   console.log("📦 Payload envoyé:", payload);
 
-  try {
-    const action = user?._id ? createCheckout(payload) : createGuestCheckout(payload);
-    console.log("🚀 Dispatch action:", action);
-    await dispatch(action).unwrap();
-    toast.success("Checkout created!", { duration: 1000 });
-    navigate("/checkout"); // ✅ redirection uniquement après succès
-  } catch (err) {
-    toast.error(err.message || "Failed to create checkout", { duration: 1000 });
-  } finally {
-    setIsButtonDisabled(false);
-  }
+      try {
+      const action = user?._id ? createCheckout(payload) : createGuestCheckout(payload);
+      console.log("🚀 Dispatch action:", action);
+    
+      const result = await dispatch(action).unwrap(); // ✅ résultat stocké
+      console.log("✅ Checkout créé:", result);
+    
+      toast.success("Checkout created!", { duration: 1000 });
+      navigate("/checkout"); // attention à la casse : route en minuscule
+    } catch (err) {
+      console.error("❌ Erreur checkout:", err);
+      toast.error(err.message || "Failed to create checkout", { duration: 1000 });
+    } finally {
+      setIsButtonDisabled(false);
+    }
+
 };
 
 
