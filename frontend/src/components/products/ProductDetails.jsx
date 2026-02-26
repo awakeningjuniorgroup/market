@@ -91,7 +91,7 @@ const handleBuyNow = async (e) => {
     await dispatch(action).unwrap();
 
     toast.success("Checkout created!", { duration: 1000 });
-    navigate("/checkout"); // ✅ redirection uniquement après succès
+    navigate("/Checkout"); // ✅ redirection uniquement après succès
   } catch (err) {
     toast.error(err.message || "Failed to create checkout", { duration: 1000 });
   } finally {
