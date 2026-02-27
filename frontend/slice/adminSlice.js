@@ -3,7 +3,7 @@ import api from "../api/axiosInstance";
 
 // fetch all users (admin only)
 export const fetchAdminUsers = createAsyncThunk(
-  "admin/fetchUsers",
+  "admin/fetchAdminUsers",
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get("/admin/users");
