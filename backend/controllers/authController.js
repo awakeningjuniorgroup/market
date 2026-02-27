@@ -21,34 +21,38 @@ const generateRefreshToken = (user) => {
 
 // Login
 exports.login = async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
 
-  if (!user || !(await user.matchPassword(password))) {
-    return res.status(401).json({ message: "Invalid credentials" });
+    if (!user || !(await user.matchPassword(password))) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    // ⚠️ secure doit être true en production avec HTTPS
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    // 👉 renvoie l’utilisateur et l’accessToken (pas besoin de renvoyer le refreshToken dans le body)
+    res.json({
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+      accessToken,
+    });
+  } catch (error) {
+    console.error("Erreur login:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
-
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-
-  // ⚠️ en local, secure doit être false
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: false, // true en prod avec HTTPS
-    sameSite: "strict",
-  });
-
-  // 👉 renvoie les deux tokens
-  res.json({
-    user: {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-    accessToken,
-    refreshToken,
-  });
 };
 
 // Refresh route
@@ -67,13 +71,12 @@ exports.refresh = async (req, res) => {
     // Met à jour le cookie
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
 
     return res.json({
       accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
     });
   } catch (err) {
     console.error("Refresh token error:", err.message);
