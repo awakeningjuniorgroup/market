@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchAllOrders, updateOrderStatus } from '../../../slice/adminOrderSlice';
+import { fetchAllOrders, updateOrderStatus } from '../../slice/adminOrderSlice';
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
