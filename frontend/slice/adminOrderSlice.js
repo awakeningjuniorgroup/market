@@ -3,7 +3,7 @@ import api from "../api/axiosInstance.js";
 
 // fetch all orders (admin only)
 export const fetchAllOrders = createAsyncThunk(
-  "adminOrders/fetchAllOrders",
+  "adminOrders/fetchallOrders",
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.get("/admin/orders");
