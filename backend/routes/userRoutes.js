@@ -2,6 +2,7 @@ const express = require("express");
 const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const { protect } = require("../middleware/authMiddleware");
+
 const router = express.Router();
 
 // Helpers
@@ -31,6 +32,13 @@ router.post("/register", async (req, res) => {
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
+    // Stocker le refresh token en cookie sécurisé
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
     res.status(201).json({
       user: {
         _id: user._id,
@@ -39,7 +47,6 @@ router.post("/register", async (req, res) => {
         role: user.role,
       },
       accessToken,
-      refreshToken,
     });
   } catch (error) {
     console.error("Erreur register:", error.message);
@@ -65,6 +72,13 @@ router.post("/login", async (req, res) => {
     const accessToken = generateAccessToken(payload);
     const refreshToken = generateRefreshToken(payload);
 
+    // Stocker le refresh token en cookie sécurisé
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
     res.status(200).json({
       user: {
         _id: user._id,
@@ -73,7 +87,6 @@ router.post("/login", async (req, res) => {
         role: user.role,
       },
       accessToken,
-      refreshToken,
     });
   } catch (error) {
     console.error("Erreur login:", error.message);
@@ -83,7 +96,7 @@ router.post("/login", async (req, res) => {
 
 // Refresh
 router.post("/refresh", (req, res) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies?.refreshToken;
   if (!refreshToken) {
     return res.status(401).json({ message: "No refresh token provided" });
   }
@@ -91,6 +104,15 @@ router.post("/refresh", (req, res) => {
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const newAccessToken = generateAccessToken({ id: decoded.id, role: decoded.role });
+    const newRefreshToken = generateRefreshToken({ id: decoded.id, role: decoded.role });
+
+    // Mettre à jour le cookie
+    res.cookie("refreshToken", newRefreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
     res.json({ accessToken: newAccessToken });
   } catch (err) {
     console.error("Erreur refresh:", err.message);
