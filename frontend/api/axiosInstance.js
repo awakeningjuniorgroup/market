@@ -13,7 +13,6 @@ const setAccessToken = (token) => {
     localStorage.setItem("accessToken", token);
   } else {
     localStorage.removeItem("accessToken");
-    console.log("AccessToken supprimé");
   }
 };
 
@@ -22,7 +21,6 @@ const setRefreshToken = (token) => {
     localStorage.setItem("refreshToken", token);
   } else {
     localStorage.removeItem("refreshToken");
-    console.log("RefreshToken supprimé");
   }
 };
 
@@ -44,7 +42,8 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (originalRequest?.url?.includes("/users/refresh")) {
+    // Ne pas tenter de refresh sur la route de refresh elle-même
+    if (originalRequest?.url?.includes("/api/auth/refresh")) {
       return Promise.reject(error);
     }
 
@@ -61,7 +60,8 @@ api.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        const refreshResponse = await api.post("/users/refresh", { refreshToken });
+        // ✅ Correction : bon endpoint pour le refresh
+        const refreshResponse = await api.post("/api/auth/refresh", { refreshToken });
 
         const newAccessToken = refreshResponse.data?.accessToken;
         const newRefreshToken = refreshResponse.data?.refreshToken;
@@ -82,6 +82,7 @@ api.interceptors.response.use(
         setAccessToken(null);
         setRefreshToken(null);
         delete api.defaults.headers.common["Authorization"];
+        // 👉 tu peux ajouter une redirection vers /login ici si tu veux
         return Promise.reject(refreshError);
       }
     }
