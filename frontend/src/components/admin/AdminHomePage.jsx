@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { fetchAdminProducts } from "../../../slice/adminProductsSlice";
-import { fetchallOrders } from "../../../slice/adminOrderSlice";
+import { fetchAllOrders } from "../../../slice/adminOrderSlice";
 
 const AdminHomePage = () => {
   const dispatch = useDispatch();
