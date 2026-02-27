@@ -1,40 +1,39 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api/axiosInstance"; // ✅ correction de l'import
+import api from "../api/axiosInstance";
 
 // fetch all users (admin only)
-export const fetchUsers = createAsyncThunk(
+export const fetchAdminUsers = createAsyncThunk(
   "admin/fetchUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/admin/users");
-      // ⚠️ adapte selon la réponse du backend
-      return response.data;
+      const { data } = await api.get("/admin/users");
+      return data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to fetch users" });
     }
   }
 );
 
-// Add user
+// add user
 export const addUser = createAsyncThunk(
   "admin/addUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/admin/users", userData);
-      return response.data;
+      const { data } = await api.post("/admin/users", userData);
+      return data.user || data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to add user" });
     }
   }
 );
 
-// update user info
+// update user
 export const updateUser = createAsyncThunk(
   "admin/updateUser",
   async ({ id, name, email, role }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/admin/users/${id}`, { name, email, role });
-      return response.data;
+      const { data } = await api.put(`/admin/users/${id}`, { name, email, role });
+      return data.user || data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to update user" });
     }
@@ -65,63 +64,44 @@ const adminSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // fetch users
-      .addCase(fetchUsers.pending, (state) => {
+      .addCase(fetchAdminUsers.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
+      .addCase(fetchAdminUsers.fulfilled, (state, action) => {
         state.loading = false;
-        // ⚠️ adapte selon la réponse du backend
         state.users = action.payload.users ? action.payload.users : action.payload;
       })
-      .addCase(fetchUsers.rejected, (state, action) => {
+      .addCase(fetchAdminUsers.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || action.error?.message || "Failed to fetch users";
+        state.error = action.payload?.message || "Failed to fetch users";
       })
 
       // add user
-      .addCase(addUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(addUser.fulfilled, (state, action) => {
-        state.loading = false;
         state.users.push(action.payload);
       })
       .addCase(addUser.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload?.message || "Failed to add user";
       })
 
       // update user
-      .addCase(updateUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(updateUser.fulfilled, (state, action) => {
-        state.loading = false;
         const updatedUser = action.payload;
-        const userIndex = state.users.findIndex((user) => user._id === updatedUser._id);
+        const userIndex = state.users.findIndex((u) => u._id === updatedUser._id);
         if (userIndex !== -1) {
           state.users[userIndex] = updatedUser;
         }
       })
       .addCase(updateUser.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload?.message || "Failed to update user";
       })
 
       // delete user
-      .addCase(deleteUser.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
       .addCase(deleteUser.fulfilled, (state, action) => {
-        state.loading = false;
-        state.users = state.users.filter((user) => user._id !== action.payload);
+        state.users = state.users.filter((u) => u._id !== action.payload);
       })
       .addCase(deleteUser.rejected, (state, action) => {
-        state.loading = false;
         state.error = action.payload?.message || "Failed to delete user";
       });
   },
