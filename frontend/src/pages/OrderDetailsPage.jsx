@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchOrderDetails } from "../slice/orderSlice"; // ✅ utilise ton slice Redux
+import { fetchOrderDetails } from "../../slice/orderSlice"; // ✅ utilise ton slice Redux
 
 const OrderDetailsPage = () => {
   const { id } = useParams();
