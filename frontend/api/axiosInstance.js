@@ -60,7 +60,7 @@ api.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        // ✅ Correction : bon endpoint pour le refresh
+        // ✅ Endpoint correct pour le refresh
         const refreshResponse = await api.post("/api/auth/refresh", { refreshToken });
 
         const newAccessToken = refreshResponse.data?.accessToken;
