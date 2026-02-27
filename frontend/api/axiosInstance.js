@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://kam-market-2.onrender.com",
+  baseURL: "https://kams-market12.onrender.com",
   withCredentials: true, // utile si tu utilises des cookies
 });
 
