@@ -1,19 +1,18 @@
 const express = require("express");
 const User = require("../models/user");
-const { protect, admin } = require("../middleware/authMiddleware");
-const verifyTokenAndAdmin = require("../middleware/verifyTokenAndAdmin")
+const { protect, isAdmin } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 // @route GET /api/admin/users
 // @desc Get all users (admin only)
 // @access Private/Admin
-router.get("/", protect, verifyTokenAndAdmin, admin, async (req, res) => {
+router.get("/", protect, isAdmin, async (req, res) => {
   try {
-    const users = await User.find({});
+    const users = await User.find({}).select("-password"); // ne pas renvoyer le hash
     res.json(users);
   } catch (error) {
-    console.error("Erreur GET /users:", error);
+    console.error("Erreur GET /api/admin/users:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
@@ -21,7 +20,7 @@ router.get("/", protect, verifyTokenAndAdmin, admin, async (req, res) => {
 // @route POST /api/admin/users
 // @desc Add a new user (admin only)
 // @access Private/Admin
-router.post("/", protect, verifyTokenAndAdmin,  admin, async (req, res) => {
+router.post("/", protect, isAdmin, async (req, res) => {
   const { name, email, password, role } = req.body;
 
   try {
@@ -33,14 +32,14 @@ router.post("/", protect, verifyTokenAndAdmin,  admin, async (req, res) => {
     user = new User({
       name,
       email,
-      password, // ⚠️ doit être hashé par le modèle User
+      password, // sera hashé automatiquement par le modèle User
       role: role || "customer",
     });
 
     await user.save();
     res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
-    console.error("Erreur POST /users:", error);
+    console.error("Erreur POST /api/admin/users:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
@@ -48,7 +47,7 @@ router.post("/", protect, verifyTokenAndAdmin,  admin, async (req, res) => {
 // @route PUT /api/admin/users/:id
 // @desc Update user info (admin only)
 // @access Private/Admin
-router.put("/:id", protect, verifyTokenAndAdmin, admin, async (req, res) => {
+router.put("/:id", protect, isAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user) {
@@ -62,7 +61,7 @@ router.put("/:id", protect, verifyTokenAndAdmin, admin, async (req, res) => {
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    console.error("Erreur PUT /users/:id:", error);
+    console.error("Erreur PUT /api/admin/users/:id:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
@@ -70,17 +69,17 @@ router.put("/:id", protect, verifyTokenAndAdmin, admin, async (req, res) => {
 // @route DELETE /api/admin/users/:id
 // @desc Delete a user (admin only)
 // @access Private/Admin
-router.delete("/:id", protect, verifyTokenAndAdmin, admin, async (req, res) => {
+router.delete("/:id", protect, isAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user) {
-      await user.deleteOne();
+      await user.remove();
       res.json({ message: "User deleted successfully" });
     } else {
       res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
-    console.error("Erreur DELETE /users/:id:", error);
+    console.error("Erreur DELETE /api/admin/users/:id:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
