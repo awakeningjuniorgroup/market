@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api/axiosInstance.js"; // ✅ utilise ton axiosInstance
+import api from "../api/axiosInstance.js"; // utilise ton axiosInstance
 
 // Récupérer l’utilisateur et les tokens depuis le localStorage
 const userFromStorage = localStorage.getItem("userInfo")
@@ -29,8 +29,8 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/users/login", userData); 
-      // ✅ baseURL déjà gérée par axiosInstance
+      // ✅ Correction : bon endpoint
+      const response = await api.post("/api/auth/login", userData);
 
       const { user, accessToken, refreshToken } = response.data;
 
@@ -38,8 +38,6 @@ export const loginUser = createAsyncThunk(
       localStorage.setItem("userInfo", JSON.stringify(user));
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-
-      
 
       return { user, accessToken, refreshToken };
     } catch (error) {
@@ -53,16 +51,14 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/users/register", userData); 
-      // ✅ utilise api
+      // ✅ Correction : bon endpoint
+      const response = await api.post("/api/auth/register", userData);
 
       const { user, accessToken, refreshToken } = response.data;
 
       localStorage.setItem("userInfo", JSON.stringify(user));
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", refreshToken);
-
-      
 
       return { user, accessToken, refreshToken };
     } catch (error) {
