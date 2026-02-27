@@ -23,7 +23,7 @@ const UserManagement = () => {
 
   useEffect(() => {
     if (user && user.role === "admin") {
-      dispatch(fetchUsers());
+      dispatch(fetchAdminUsers());
     }
   }, [dispatch, user]);
 
