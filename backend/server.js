@@ -12,8 +12,7 @@ const checkoutRoutes = require("./routes/checkoutRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
 const subscribeRoutes = require("./routes/subscribeRoutes");
-const orangeMoneyRoutes = require("./routes/orangeMoneyRoutes");
-const orangeMoneyvalidationRoutes = require("./routes/orangeMoneyRoutes");
+const orangeMoneyRoutes = require("./routes/orangeMoneyRoutes"); // ✅ un seul import
 
 // Routes Admin
 const adminUserRoutes = require("./routes/adminRoutes"); 
@@ -22,7 +21,7 @@ const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
 // Initialisation de l'app
 const app = express();
-require("dotenv").config();
+dotenv.config();
 
 // Middlewares
 app.use(express.json());
@@ -57,8 +56,7 @@ app.use("/api/checkout", checkoutRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/subscribe", subscribeRoutes);
-app.use("/api/orange-money", orangeMoneyRoutes);
-app.use("/api/initiate-payment", orangeMoneyvalidationRoutes);
+app.use("/api/orange-money", orangeMoneyRoutes); // ✅ un seul montage
 
 // API Routes Admin
 app.use("/api/admin/users", adminUserRoutes);
