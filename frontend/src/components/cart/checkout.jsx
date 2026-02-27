@@ -244,7 +244,11 @@ const Checkout = () => {
                     onError={() => alert("Paiement échoué. Réessayez.")}
                   />
                   <OrangeMoneyButton amount={cart.totalPrice + (shippingAddress.shippingFee || 0)} />
-                  <CashOnDeliveryButton checkoutId={checkoutId} />
+
+                  {/* ✅ COD seulement pour Yaoundé et Douala */}
+                  {["Yaoundé", "Douala"].includes(shippingAddress.city) && (
+                    <CashOnDeliveryButton checkoutId={checkoutId} />
+                  )}
                 </div>
               </div>
             )}
