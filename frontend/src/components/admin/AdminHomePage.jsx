@@ -23,7 +23,7 @@ const AdminHomePage = () => {
 
   useEffect(() => {
     dispatch(fetchAdminProducts());
-    dispatch(fetchallOrders());
+    dispatch(fetchAllOrders());
   }, [dispatch]);
 
   const renderError = (error) => {
