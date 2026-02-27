@@ -5,7 +5,7 @@ import {
   addUser,
   updateUser,
   deleteUser,
-  fetchUsers,
+  fetchAdminUsers,
 } from "../../../slice/adminSlice"; // ✅ importer les actions
 
 const UserManagement = () => {
