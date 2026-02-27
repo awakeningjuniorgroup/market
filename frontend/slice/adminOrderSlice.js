@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance.js";
 
 // fetch all orders (admin only)
-export const fetchaallOrders = createAsyncThunk(
+export const fetchAllOrders = createAsyncThunk(
   "adminOrders/fetchallOrders",
   async (_, { rejectWithValue }) => {
     try {
