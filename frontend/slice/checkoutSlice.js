@@ -6,7 +6,7 @@ export const createCheckout = createAsyncThunk(
   "checkout/createCheckout",
   async (checkoutData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/checkout", checkoutData);
+      const response = await api.post("/api/checkout", checkoutData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Checkout failed" });
@@ -19,7 +19,7 @@ export const createGuestCheckout = createAsyncThunk(
   "checkout/createGuestCheckout",
   async (checkoutData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/checkout/guest", checkoutData);
+      const response = await api.post("/api/checkout/guest", checkoutData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Guest checkout failed" });
@@ -32,7 +32,7 @@ export const finalizeCheckout = createAsyncThunk(
   "checkout/finalizeCheckout",
   async (checkoutId, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/checkout/${checkoutId}/finalize`);
+      const response = await api.post(`/api/checkout/${checkoutId}/finalize`);
       return response.data; // ⚠️ backend renvoie finalOrder
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Finalize failed" });
@@ -45,7 +45,7 @@ export const initiateOrangeMoneyPayment = createAsyncThunk(
   "checkout/initiateOrangeMoneyPayment",
   async (amount, { rejectWithValue }) => {
     try {
-      const response = await api.post("/orange-money/initiate-payment", { amount });
+      const response = await api.post("/api/orange-money/initiate-payment", { amount });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Orange Money payment failed" });
@@ -58,7 +58,7 @@ export const createInvoice = createAsyncThunk(
   "checkout/createInvoice",
   async (invoiceData, { rejectWithValue }) => {
     try {
-      const response = await api.post("/invoices", invoiceData);
+      const response = await api.post("/api/invoices", invoiceData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Invoice failed" });
