@@ -26,7 +26,7 @@ const Home = () => {
     // fetch best seller product via axiosInstance
     const fetchBestSeller = async () => {
       try {
-        const response = await api.get("/products/best-seller"); 
+        const response = await api.get("api/products/best-seller"); 
         // ✅ pas besoin de mettre l’URL complète, ton axiosInstance gère la baseURL
         setBestSellerProduct(response.data);
       } catch (error) {
