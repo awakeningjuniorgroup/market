@@ -1,30 +1,24 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://kam-market-2.onrender.com",
-  withCredentials: true, // utile si tu utilises des cookies
+  baseURL: "https://kam-market-2.onrender.com", // ⚠️ vérifie que c’est bien ton backend déployé
+  withCredentials: true,
 });
 
-// Helpers pour gérer les tokens
+// Helpers
 const getRefreshToken = () => localStorage.getItem("refreshToken");
 
 const setAccessToken = (token) => {
-  if (token) {
-    localStorage.setItem("accessToken", token);
-  } else {
-    localStorage.removeItem("accessToken");
-  }
+  if (token) localStorage.setItem("accessToken", token);
+  else localStorage.removeItem("accessToken");
 };
 
 const setRefreshToken = (token) => {
-  if (token) {
-    localStorage.setItem("refreshToken", token);
-  } else {
-    localStorage.removeItem("refreshToken");
-  }
+  if (token) localStorage.setItem("refreshToken", token);
+  else localStorage.removeItem("refreshToken");
 };
 
-// Intercepteur REQUEST : ajoute le token
+// Intercepteur REQUEST
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("accessToken");
@@ -36,13 +30,12 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercepteur RESPONSE : gère le refresh si le token est expiré
+// Intercepteur RESPONSE
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // Ne pas tenter de refresh sur la route de refresh elle-même
     if (originalRequest?.url?.includes("/api/auth/refresh")) {
       return Promise.reject(error);
     }
@@ -60,11 +53,10 @@ api.interceptors.response.use(
           return Promise.reject(error);
         }
 
-        // ✅ Endpoint correct pour le refresh
-        const refreshResponse = await api.post("/api/auth/refresh", { refreshToken });
+        const { data } = await api.post("/api/auth/refresh", { refreshToken });
 
-        const newAccessToken = refreshResponse.data?.accessToken;
-        const newRefreshToken = refreshResponse.data?.refreshToken;
+        const newAccessToken = data?.accessToken;
+        const newRefreshToken = data?.refreshToken;
 
         if (newAccessToken) {
           setAccessToken(newAccessToken);
@@ -82,7 +74,7 @@ api.interceptors.response.use(
         setAccessToken(null);
         setRefreshToken(null);
         delete api.defaults.headers.common["Authorization"];
-        // 👉 tu peux ajouter une redirection vers /login ici si tu veux
+        window.location.href = "/login"; // ✅ redirection automatique
         return Promise.reject(refreshError);
       }
     }
