@@ -44,7 +44,7 @@ router.get("/:id", protect, async (req, res) => {
 
 // @route POST /api/orders
 // @desc Create new order
-// @access Private
+// @access Private (ou Guest si tu veux autoriser sans compte)
 router.post("/", protect, async (req, res) => {
   try {
     const {
@@ -61,11 +61,11 @@ router.post("/", protect, async (req, res) => {
     }
 
     const order = new Order({
-      user: req.user ? req.user._id : null, // ✅ lié à l'utilisateur connecté
+      user: req.user ? req.user._id : null, // ✅ supporte guest checkout
       orderItems,
       shippingAddress: {
         ...shippingAddress,
-        phone // ✅ ajoute le téléphone dans l'adresse
+        phone
       },
       paymentMethod,
       totalPrice,
