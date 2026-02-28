@@ -47,6 +47,7 @@ router.get("/:id", protect, async (req, res) => {
 // @access Private (ou Guest si tu veux autoriser sans compte)
 router.post("/", protect, async (req, res) => {
   try {
+    console.log("Nouvelle commande reçue:", req.body); 
     const {
       orderItems,
       shippingAddress,
