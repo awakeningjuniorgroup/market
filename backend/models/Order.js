@@ -40,7 +40,7 @@ const orderSchema = new mongoose.Schema({
         quarter: {type: String, required: true},
         city: {type: String, required: true},
         country: {type: String, required: true},
-        phone: {type: number, required: true},
+        phone: {type: Number, required: true},
     },
     paymentMethod: {
         type: String,
