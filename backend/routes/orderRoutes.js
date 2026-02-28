@@ -61,7 +61,7 @@ router.post("/", protect, async (req, res) => {
     }
 
     const order = new Order({
-      user: req.user._id, // ✅ lié à l'utilisateur connecté
+      user: req.user ? req.user._id : null, // ✅ lié à l'utilisateur connecté
       orderItems,
       shippingAddress: {
         ...shippingAddress,
