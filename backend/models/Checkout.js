@@ -2,12 +2,13 @@ const mongoose = require("mongoose");
 
 const checkoutItemSchema = new mongoose.Schema(
   {
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
     name: { type: String, required: true },
     image: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true },
-    size: { type: String, required: true },
-    color: { type: String, required: true },
+    size: { type: String },
+    color: { type: String },
   },
   { _id: false }
 );
@@ -20,16 +21,16 @@ const checkoutSchema = new mongoose.Schema(
     checkoutItems: [checkoutItemSchema],
 
     shippingAddress: {
-      firstName: { type: String, required: true },
-      phone: { type: String, required: true },
+      firstname: { type: String, required: true },
       quarter: { type: String, required: true },
       city: { type: String, required: true },
       country: { type: String, required: true },
+      phone: { type: String, required: true },
     },
 
     paymentMethod: {
       type: String,
-      enum: ["COD", "PayPal", "OrangeMoney", "pending"], // ✅ ajout "pending"
+      enum: ["COD", "PayPal", "OrangeMoney", "pending"],
       required: true,
     },
 
@@ -49,12 +50,11 @@ const checkoutSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ Génération automatique d’un numéro de facture unique
+// Génération automatique d’un numéro de facture unique
 checkoutSchema.pre("save", function () {
   if (!this.invoiceNumber) {
     this.invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
   }
 });
-
 
 module.exports = mongoose.model("Checkout", checkoutSchema);
