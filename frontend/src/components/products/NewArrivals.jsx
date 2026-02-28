@@ -18,7 +18,7 @@ const NewArrivals = () => {
       try {
         // ✅ pas besoin de `${import.meta.env.VITE_BACKEND_URL}`, 
         // ton axiosInstance a déjà le baseURL
-        const response = await api.get("/products/new-arrivals");
+        const response = await api.get("api/products/new-arrivals");
         setNewArrivals(response.data);
       } catch (error) {
         console.error("Erreur lors du fetch des new arrivals:", error);
