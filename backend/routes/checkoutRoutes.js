@@ -208,6 +208,8 @@ router.post("/:id/finalize", protect, async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
+console.log("📦 Payload reçu:", req.body);
+
 
 
 module.exports = router;
