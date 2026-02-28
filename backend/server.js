@@ -59,9 +59,9 @@ app.use("/api/subscribe", subscribeRoutes);
 app.use("/api/orange-money", orangeMoneyRoutes); // ✅ un seul montage
 
 // API Routes Admin
-app.use("api/admin/users", adminUserRoutes);
-app.use("api/admin/products", adminProductRoutes);
-app.use("api/admin/orders", adminOrderRoutes);
+app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/admin/products", adminProductRoutes);
+app.use("/api/admin/orders", adminOrderRoutes);
 
 // Lancement du serveur
 app.listen(PORT, () => {
