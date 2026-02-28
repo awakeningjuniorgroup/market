@@ -6,7 +6,7 @@ export const fetchAllOrders = createAsyncThunk(
   "adminOrders/fetchAllOrders",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/api/admin/orders"); // ✅ corrigé
+      const response = await api.get("/api/admin/orders");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to fetch orders" });
@@ -14,13 +14,13 @@ export const fetchAllOrders = createAsyncThunk(
   }
 );
 
-// update order delivered status
+// update order status
 export const updateOrderStatus = createAsyncThunk(
   "adminOrders/updateOrderStatus",
   async ({ id, status }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/api/admin/orders/${id}`, { status }); // ✅ corrigé
-      return response.data;
+      const response = await api.put(`/api/admin/orders/${id}`, { status });
+      return response.data; // ✅ backend renvoie l’ordre complet
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to update order" });
     }
@@ -32,8 +32,8 @@ export const deleteOrder = createAsyncThunk(
   "adminOrders/deleteOrder",
   async (id, { rejectWithValue }) => {
     try {
-      await api.delete(`/api/admin/orders/${id}`); // ✅ corrigé
-      return id;
+      const response = await api.delete(`/api/admin/orders/${id}`);
+      return response.data.id; // ✅ backend renvoie { message, id }
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to delete order" });
     }
@@ -59,7 +59,9 @@ const adminOrderSlice = createSlice({
       })
       .addCase(fetchAllOrders.fulfilled, (state, action) => {
         state.loading = false;
-        const orders = Array.isArray(action.payload) ? action.payload : action.payload.orders || [];
+        const orders = Array.isArray(action.payload.orders)
+          ? action.payload.orders
+          : [];
         state.orders = orders;
         state.totalOrders = orders.length;
         state.totalSales = orders.reduce((acc, order) => acc + (order.totalPrice || 0), 0);
@@ -74,7 +76,7 @@ const adminOrderSlice = createSlice({
         const updatedOrder = action.payload;
         const orderIndex = state.orders.findIndex((order) => order._id === updatedOrder._id);
         if (orderIndex !== -1) {
-          state.orders[orderIndex] = updatedOrder;
+          state.orders[orderIndex] = updatedOrder; // ✅ remplace la commande
         }
       })
       .addCase(updateOrderStatus.rejected, (state, action) => {
@@ -84,6 +86,8 @@ const adminOrderSlice = createSlice({
       // delete order
       .addCase(deleteOrder.fulfilled, (state, action) => {
         state.orders = state.orders.filter((order) => order._id !== action.payload);
+        state.totalOrders = state.orders.length;
+        state.totalSales = state.orders.reduce((acc, order) => acc + (order.totalPrice || 0), 0);
       })
       .addCase(deleteOrder.rejected, (state, action) => {
         state.error = action.payload?.message || "Failed to delete order";
