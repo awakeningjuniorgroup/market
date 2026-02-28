@@ -34,6 +34,10 @@ const OrderManagement = () => {
             <tr>
               <th className="py-3 px-4">Order ID</th>
               <th className="py-3 px-4">Customer</th>
+              <th className="py-3 px-4">City</th>
+              <th className="py-3 px-4">Country</th>
+              <th className="py-3 px-4">Phone</th>
+              <th className="py-3 px-4">Quarter</th>
               <th className="py-3 px-4">Total Price</th>
               <th className="py-3 px-4">Status</th>
               <th className="py-3 px-4">Actions</th>
@@ -52,8 +56,12 @@ const OrderManagement = () => {
                   <td className="p-4">
                     {order.user
                       ? order.user.name
-                      : order.shippingAddress?.address || "Guest"}
+                      : order.shippingAddress?.firstName || "Guest"}
                   </td>
+                  <td className="p-4">{order.shippingAddress?.city || "-"}</td>
+                  <td className="p-4">{order.shippingAddress?.country || "-"}</td>
+                  <td className="p-4">{order.shippingAddress?.phone || "-"}</td>
+                  <td className="p-4">{order.quarter || "-"}</td>
                   <td className="p-4">
                     FCFA {order.totalPrice?.toFixed(2)}
                   </td>
@@ -86,7 +94,7 @@ const OrderManagement = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="text-center">
+                <td colSpan={9} className="text-center">
                   No orders found.
                 </td>
               </tr>
