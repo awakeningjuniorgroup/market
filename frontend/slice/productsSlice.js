@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api/axiosInstance.js"; // ✅ correction de l'import
+import api from "../api/axiosInstance.js";
 
 // fetch products by filters
 export const fetchProductsByFilters = createAsyncThunk(
@@ -11,7 +11,7 @@ export const fetchProductsByFilters = createAsyncThunk(
         if (value) query.append(key, value);
       });
 
-      const response = await api.get(`/products?${query.toString()}`);
+      const response = await api.get(`/api/products?${query.toString()}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to fetch products" });
@@ -24,7 +24,7 @@ export const fetchProductDetails = createAsyncThunk(
   "products/fetchProductDetails",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/products/${id}`);
+      const response = await api.get(`/api/products/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to fetch product details" });
@@ -37,7 +37,7 @@ export const updateProduct = createAsyncThunk(
   "products/updateProduct",
   async ({ id, productData }, { rejectWithValue }) => {
     try {
-      const response = await api.put(`/products/${id}`, productData);
+      const response = await api.put(`/api/admin/products/${id}`, productData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to update product" });
@@ -50,7 +50,7 @@ export const fetchSimilarProducts = createAsyncThunk(
   "products/fetchSimilarProducts",
   async ({ id }, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/products/similar/${id}`);
+      const response = await api.get(`/api/products/similar/${id}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to fetch similar products" });
@@ -155,7 +155,7 @@ const productsSlice = createSlice({
       })
       .addCase(fetchSimilarProducts.fulfilled, (state, action) => {
         state.loading = false;
-        state.similarProducts = action.payload;
+        state.similarProducts = Array.isArray(action.payload) ? action.payload : [];
       })
       .addCase(fetchSimilarProducts.rejected, (state, action) => {
         state.loading = false;
