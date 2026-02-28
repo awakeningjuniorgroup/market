@@ -4,91 +4,38 @@ const { protect, isAdmin } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
-// @route POST /api/products
-// @desc Create a new product
-// @access Private/Admin
+// --- ROUTES ADMIN ---
+// @route POST /api/admin/products
 router.post("/", protect, isAdmin, async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      price,
-      discountPrice,
-      countInStock,
-      category,
-      brand,
-      sizes,
-      colors,
-      collections,
-      material,
-      gender,
-      images,
-      isFeatured,
-      isPublished,
-      tags,
-      dimensions,
-      weight,
-      sku,
-    } = req.body;
-
-    const product = new Product({
-      name,
-      description,
-      price,
-      discountPrice,
-      countInStock,
-      category,
-      brand,
-      sizes,
-      colors,
-      collections,
-      material,
-      gender,
-      images,
-      isFeatured,
-      isPublished,
-      tags,
-      dimensions,
-      weight,
-      sku,
-      user: req.user._id, // référence à l’admin qui crée le produit
-    });
-
+    const product = new Product({ ...req.body, user: req.user._id });
     const createdProduct = await product.save();
     res.status(201).json(createdProduct);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
-// @route PUT /api/products/:id
-// @desc Update an existing product by ID
-// @access Private/Admin
+// @route PUT /api/admin/products/:id
 router.put("/:id", protect, isAdmin, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-
     if (product) {
-      Object.assign(product, req.body); // mise à jour rapide
+      Object.assign(product, req.body);
       const updatedProduct = await product.save();
       res.json(updatedProduct);
     } else {
       res.status(404).json({ message: "Product not found" });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
-// @route DELETE /api/products/:id
-// @desc Delete a product by ID
-// @access Private/Admin
+// @route DELETE /api/admin/products/:id
 router.delete("/:id", protect, isAdmin, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-
     if (product) {
       await product.deleteOne();
       res.json({ message: "Product removed" });
@@ -96,31 +43,15 @@ router.delete("/:id", protect, isAdmin, async (req, res) => {
       res.status(404).json({ message: "Product not found" });
     }
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
+// --- ROUTES PUBLIQUES ---
 // @route GET /api/products
-// @desc Get all products with optional filters
-// @access Public
 router.get("/", async (req, res) => {
   try {
-    const {
-      collection,
-      size,
-      color,
-      gender,
-      minPrice,
-      maxPrice,
-      sortBy,
-      search,
-      category,
-      material,
-      brand,
-      limit,
-    } = req.query;
-
+    const { collection, size, color, gender, minPrice, maxPrice, sortBy, search, category, material, brand, limit } = req.query;
     let query = {};
 
     if (collection && collection.toLowerCase() !== "all") query.collections = collection;
@@ -150,8 +81,7 @@ router.get("/", async (req, res) => {
     const products = await Product.find(query).sort(sort).limit(Number(limit) || 0);
     res.json(products);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
@@ -161,20 +91,17 @@ router.get("/new-arrivals", async (req, res) => {
     const newArrivals = await Product.find().sort({ createdAt: -1 }).limit(8);
     res.json(newArrivals);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
 // @route GET /api/products/best-seller
 router.get("/best-seller", async (req, res) => {
   try {
-    const bestSeller = await Product.findOne().sort({ rating: -1 });
-    if (bestSeller) res.json(bestSeller);
-    else res.status(404).json({ message: "No best seller found" });
+    const bestSellers = await Product.find().sort({ rating: -1 }).limit(8);
+    res.json(bestSellers);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
@@ -185,8 +112,7 @@ router.get("/:id", async (req, res) => {
     if (product) res.json(product);
     else res.status(404).json({ message: "Product not found" });
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
@@ -204,8 +130,7 @@ router.get("/similar/:id", async (req, res) => {
 
     res.json(similarProducts);
   } catch (error) {
-    console.error(error);
-    res.status(500).send("Server Error");
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
