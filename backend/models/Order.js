@@ -1,24 +1,23 @@
 const mongoose = require("mongoose");
 
-const checkoutItemSchema = new mongoose.Schema(
+const orderItemSchema = new mongoose.Schema(
   {
-    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product", required: true },
     name: { type: String, required: true },
     image: { type: String, required: true },
     price: { type: Number, required: true },
-    quantity: { type: Number, required: true },
     size: { type: String },
     color: { type: String },
+    quantity: { type: Number, required: true },
   },
   { _id: false }
 );
 
-const checkoutSchema = new mongoose.Schema(
+const orderSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
-    guestId: { type: String, required: false },
 
-    checkoutItems: [checkoutItemSchema],
+    orderItems: [orderItemSchema],
 
     shippingAddress: {
       firstname: { type: String, required: true },
@@ -28,34 +27,24 @@ const checkoutSchema = new mongoose.Schema(
       phone: { type: String, required: true },
     },
 
-    paymentMethod: {
-      type: String,
-      enum: ["COD", "PayPal", "OrangeMoney", "pending"],
-      required: true,
-    },
-
+    paymentMethod: { type: String, required: true },
     totalPrice: { type: Number, required: true },
 
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
+
+    isDelivered: { type: Boolean, default: false },
+    deliveredAt: { type: Date },
+
     paymentStatus: { type: String, default: "pending" },
-    paymentDetails: { type: mongoose.Schema.Types.Mixed },
 
-    isFinalized: { type: Boolean, default: false },
-    finalizedAt: { type: Date },
-
-    invoiceNumber: { type: String, unique: true },
-    invoiceDate: { type: Date, default: Date.now },
+    status: {
+      type: String,
+      enum: ["Processing", "Shipped", "Delivered", "Cancelled"],
+      default: "Processing",
+    },
   },
   { timestamps: true }
 );
 
-// Génération automatique d’un numéro de facture unique
-checkoutSchema.pre("save", function () {
-  if (!this.invoiceNumber) {
-    this.invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-  }
-});
-
 module.exports = mongoose.model("Order", orderSchema);
-
