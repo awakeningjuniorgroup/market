@@ -70,7 +70,7 @@ const orderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ["Processing", "shipped", "Delivered", "Cancelled"]
+        enum: ["Processing", "Shipped", "Delivered", "Cancelled"]
     },
 },
     {timestamps: true}
