@@ -43,5 +43,26 @@ router.get("/:id", protect, async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
+// @route POST /api/orders
+// @desc Create new order
+// @access Private
+router.post("/", protect, async (req, res) => {
+  try {
+    const order = new Order({
+      user: req.user._id,
+      orderItems: req.body.orderItems,
+      shippingAddress: req.body.shippingAddress,
+      paymentMethod: req.body.paymentMethod,
+      totalPrice: req.body.totalPrice,
+      quarter: req.body.quarter, // ✅ ajouté si tu veux gérer le trimestre
+    });
+
+    const createdOrder = await order.save();
+    res.status(201).json(createdOrder);
+  } catch (error) {
+    console.error("Erreur POST /api/orders:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
 
 module.exports = router;
