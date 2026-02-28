@@ -1,21 +1,18 @@
 const express = require("express");
 const Order = require("../models/Order");
-const { protect, isAdmin } = require("../middleware/authMiddleware");
-
+const { protect, admin } = require("../middleware/authMiddleware");
+const verifyTokenAndAdmin = require("../middleware/verifyTokenAndAdmin")
 const router = express.Router();
 
 // @route GET /api/admin/orders
-// @desc Get all orders (users + guests)
+// @desc Get all orders (only admin)
 // @access Private/Admin
-router.get("/", protect, isAdmin, async (req, res) => {
+router.get("/", protect, verifyTokenAndAdmin, admin, async (req, res) => {
   try {
-    const orders = await Order.find({})
-      .populate("user", "name email role") // si user existe
-      .sort({ createdAt: -1 });
-
+    const orders = await Order.find({}).populate("user", "name email");
     res.json(orders);
   } catch (error) {
-    console.error("Erreur GET /api/admin/orders:", error);
+    console.error("Erreur GET /orders:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
@@ -23,9 +20,9 @@ router.get("/", protect, isAdmin, async (req, res) => {
 // @route PUT /api/admin/orders/:id
 // @desc Update order status
 // @access Private/Admin
-router.put("/:id", protect, isAdmin, async (req, res) => {
+router.put("/:id", protect, verifyTokenAndAdmin, admin, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate("user", "name email role");
+    const order = await Order.findById(req.params.id).populate("user", "name email");
     if (order) {
       order.status = req.body.status || order.status;
 
@@ -35,12 +32,12 @@ router.put("/:id", protect, isAdmin, async (req, res) => {
       }
 
       const updatedOrder = await order.save();
-      res.json({ message: "Order updated successfully", order: updatedOrder });
+      res.json(updatedOrder);
     } else {
       res.status(404).json({ message: "Order not found" });
     }
   } catch (error) {
-    console.error("Erreur PUT /api/admin/orders/:id:", error);
+    console.error("Erreur PUT /orders/:id:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
@@ -48,17 +45,17 @@ router.put("/:id", protect, isAdmin, async (req, res) => {
 // @route DELETE /api/admin/orders/:id
 // @desc Delete an order
 // @access Private/Admin
-router.delete("/:id", protect, isAdmin, async (req, res) => {
+router.delete("/:id", protect, verifyTokenAndAdmin, admin, async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
     if (order) {
-      await order.remove();
-      res.json({ message: "Order deleted successfully" });
+      await order.deleteOne(); // ou Order.findByIdAndDelete(req.params.id)
+      res.json({ message: "Order removed" });
     } else {
       res.status(404).json({ message: "Order not found" });
     }
   } catch (error) {
-    console.error("Erreur DELETE /api/admin/orders/:id:", error);
+    console.error("Erreur DELETE /orders/:id:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
