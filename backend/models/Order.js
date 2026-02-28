@@ -57,4 +57,5 @@ checkoutSchema.pre("save", function () {
   }
 });
 
-module.exports = mongoose.model("Checkout", checkoutSchema);
+module.exports = mongoose.model("Order", orderSchema);
+
