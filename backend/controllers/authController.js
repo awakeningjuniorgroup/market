@@ -19,7 +19,7 @@ const generateRefreshToken = (user) => {
   );
 };
 
-// Login
+// --- LOGIN ---
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -32,14 +32,12 @@ exports.login = async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    // ⚠️ secure doit être true en production avec HTTPS
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
     });
 
-    // 👉 renvoie l’utilisateur, l’accessToken ET le refreshToken
     res.json({
       user: {
         _id: user._id,
@@ -48,7 +46,7 @@ exports.login = async (req, res) => {
         role: user.role,
       },
       accessToken,
-      refreshToken, // ✅ ajouté pour le frontend
+      refreshToken,
     });
   } catch (error) {
     console.error("Erreur login:", error);
@@ -56,7 +54,7 @@ exports.login = async (req, res) => {
   }
 };
 
-// Refresh route
+// --- REFRESH ---
 exports.refresh = async (req, res) => {
   const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
   if (!refreshToken) return res.status(401).json({ message: "No refresh token" });
@@ -69,7 +67,6 @@ exports.refresh = async (req, res) => {
     const newAccessToken = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
 
-    // Met à jour le cookie
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -78,16 +75,24 @@ exports.refresh = async (req, res) => {
 
     return res.json({
       accessToken: newAccessToken,
-      refreshToken: newRefreshToken, // ✅ ajouté pour le frontend
+      refreshToken: newRefreshToken,
     });
   } catch (err) {
     console.error("Refresh token error:", err.message);
     return res.status(401).json({ message: "Invalid refresh token" });
   }
 };
+
+// --- REGISTER ---
 exports.register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+
+    // Validation du mot de passe
+    if (!password || password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters long" });
+    }
+
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
@@ -105,4 +110,3 @@ exports.register = async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 };
-
