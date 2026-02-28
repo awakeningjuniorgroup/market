@@ -15,6 +15,7 @@ const subscribeRoutes = require("./routes/subscribeRoutes");
 const orangeMoneyRoutes = require("./routes/orangeMoneyRoutes"); // ✅ un seul import
 const authRoutes = require("./routes/authRoutes");
 
+
 // Routes Admin
 const adminUserRoutes = require("./routes/adminRoutes"); 
 const adminProductRoutes = require("./routes/productAdminRoutes"); 
@@ -33,10 +34,6 @@ app.use(cors({
   credentials: true,
   allowedHeaders: ["Authorization", "Content-Type"],
 }));
-
-// Auth
-const authRoutes = require("./routes/authRoutes");
-app.use("/api/auth", authRoutes);
 
 // Connexion DB
 connectDB();
