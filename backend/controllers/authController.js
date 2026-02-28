@@ -85,3 +85,24 @@ exports.refresh = async (req, res) => {
     return res.status(401).json({ message: "Invalid refresh token" });
   }
 };
+exports.register = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const user = await User.create({ name, email, password, role: role || "customer" });
+    if (user) {
+      const accessToken = generateAccessToken(user);
+      const refreshToken = generateRefreshToken(user);
+      res.json({ user, accessToken, refreshToken });
+    } else {
+      res.status(400).json({ message: "Invalid user data" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+};
+
