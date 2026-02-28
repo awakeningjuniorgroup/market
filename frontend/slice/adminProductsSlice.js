@@ -6,7 +6,7 @@ export const fetchAdminProducts = createAsyncThunk(
   "adminProducts/fetchAllProducts",
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get("/admin/products");
+      const { data } = await api.get("/api/admin/products");
       return data;
     } catch (err) {
       return rejectWithValue(err.response?.data || { message: "Failed to fetch products" });
@@ -19,7 +19,7 @@ export const createProduct = createAsyncThunk(
   "adminProducts/create",
   async (productData, { rejectWithValue }) => {
     try {
-      const { data } = await api.post("/admin/products", productData);
+      const { data } = await api.post("/api/admin/products", productData);
       return data.product || data; // selon ce que renvoie ton backend
     } catch (err) {
       return rejectWithValue(err.response?.data || { message: "Failed to create product" });
@@ -32,7 +32,7 @@ export const updateProduct = createAsyncThunk(
   "adminProducts/update",
   async ({ id, productData }, { rejectWithValue }) => {
     try {
-      const { data } = await api.put(`/admin/products/${id}`, productData);
+      const { data } = await api.put(`/api/admin/products/${id}`, productData);
       return data.product || data;
     } catch (err) {
       return rejectWithValue(err.response?.data || { message: "Failed to update product" });
@@ -45,7 +45,7 @@ export const deleteProduct = createAsyncThunk(
   "adminProducts/delete",
   async (id, { rejectWithValue }) => {
     try {
-      await api.delete(`/admin/products/${id}`);
+      await api.delete(`/api/admin/products/${id}`);
       return id;
     } catch (err) {
       return rejectWithValue(err.response?.data || { message: "Failed to delete product" });
