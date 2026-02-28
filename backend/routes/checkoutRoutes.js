@@ -161,5 +161,53 @@ router.post("/:id/finalize", async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
+/**
+ * @route POST /api/checkout/:id/finalize
+ * @desc Finaliser un checkout et créer une commande
+ * @access Private (utilisateur connecté ou admin)
+ */
+router.post("/:id/finalize", protect, async (req, res) => {
+  try {
+    const checkout = await Checkout.findById(req.params.id);
+
+    if (!checkout) {
+      return res.status(404).json({ message: "Checkout not found" });
+    }
+
+    // Créer un Order à partir du Checkout
+    const order = new Order({
+      user: checkout.user || null,
+      orderItems: checkout.checkoutItems.map(item => ({
+        productId: item.productId || null,
+        name: item.name,
+        image: item.image,
+        price: item.price,
+        size: item.size,
+        color: item.color,
+        quantity: item.quantity,
+      })),
+      shippingAddress: checkout.shippingAddress,
+      paymentMethod: checkout.paymentMethod,
+      totalPrice: checkout.totalPrice,
+      status: "Processing",
+    });
+
+    const createdOrder = await order.save();
+
+    // Marquer le checkout comme finalisé
+    checkout.isFinalized = true;
+    checkout.finalizedAt = Date.now();
+    await checkout.save();
+
+    res.status(201).json({
+      message: "Checkout finalized and order created",
+      order: createdOrder,
+    });
+  } catch (error) {
+    console.error("❌ Erreur finalisation checkout:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
 
 module.exports = router;
