@@ -39,7 +39,7 @@ exports.login = async (req, res) => {
       sameSite: "strict",
     });
 
-    // 👉 renvoie l’utilisateur et l’accessToken (pas besoin de renvoyer le refreshToken dans le body)
+    // 👉 renvoie l’utilisateur, l’accessToken ET le refreshToken
     res.json({
       user: {
         _id: user._id,
@@ -48,6 +48,7 @@ exports.login = async (req, res) => {
         role: user.role,
       },
       accessToken,
+      refreshToken, // ✅ ajouté pour le frontend
     });
   } catch (error) {
     console.error("Erreur login:", error);
@@ -77,6 +78,7 @@ exports.refresh = async (req, res) => {
 
     return res.json({
       accessToken: newAccessToken,
+      refreshToken: newRefreshToken, // ✅ ajouté pour le frontend
     });
   } catch (err) {
     console.error("Refresh token error:", err.message);
