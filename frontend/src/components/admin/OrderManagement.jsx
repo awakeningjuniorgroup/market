@@ -52,14 +52,14 @@ const OrderManagement = () => {
                   <td className="p-4">
                     {order.user
                       ? order.user.name
-                      : order.shippingAddress?.firstName || "Guest"}
+                      : order.shippingAddress?.address || "Guest"}
                   </td>
                   <td className="p-4">
                     FCFA {order.totalPrice?.toFixed(2)}
                   </td>
                   <td className="p-4">
                     <select
-                      value={order.status}
+                      value={order.status || "Processing"}
                       onChange={(e) =>
                         handleStatusChange(order._id, e.target.value)
                       }
