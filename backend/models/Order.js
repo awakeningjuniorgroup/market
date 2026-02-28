@@ -35,11 +35,12 @@ const orderSchema = new mongoose.Schema({
         required: true,
     },
     orderItems: [orderItemSchema],
-    shippinAddress: {
-        address: {type: String, required: true},
+    shippingAddress: {
+        firstname: {type: String, required: true},
+        quarter: {type: String, required: true},
         city: {type: String, required: true},
-        postalCode: {type: String, required: true},
         country: {type: String, required: true},
+        phone: {type: number, required: true},
     },
     paymentMethod: {
         type: String,
@@ -72,7 +73,7 @@ const orderSchema = new mongoose.Schema({
         enum: ["Processing", "shipped", "Delivered", "Cancelled"]
     },
 },
-    {timeseries: true}
+    {timestamps: true}
 )
 
 module.exports = mongoose.model("order", orderSchema);
