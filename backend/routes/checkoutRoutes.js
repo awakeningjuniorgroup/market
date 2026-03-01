@@ -20,6 +20,7 @@ router.post("/", protect, async (req, res) => {
   }
 
   try {
+    console.log("📦 Payload reçu:", req.body);
     const method = validMethods.includes(paymentMethod) ? paymentMethod : "COD";
 
     const newCheckout = await Checkout.create({
@@ -208,7 +209,7 @@ router.post("/:id/finalize", protect, async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
-console.log("📦 Payload reçu:", req.body);
+
 
 
 
