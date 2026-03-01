@@ -96,8 +96,7 @@ const Checkout = () => {
     quarter: "",
     city: "",
     country: "",
-    phone: "",
-    shippingFee: 0,
+    phone: ""
   });
 
   useEffect(() => {
