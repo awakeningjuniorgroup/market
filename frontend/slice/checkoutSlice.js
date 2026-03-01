@@ -7,6 +7,7 @@ export const createCheckout = createAsyncThunk(
   async (checkoutData, { rejectWithValue }) => {
     try {
       const response = await api.post("/api/checkout", checkoutData);
+      console.log("📤 Payload envoyé:", checkoutData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Checkout failed" });
