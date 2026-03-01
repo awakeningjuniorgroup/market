@@ -3,6 +3,9 @@ import axios from "axios";
 const api = axios.create({
   baseURL: "https://kam-market-2.onrender.com", // ⚠️ vérifie que c’est bien ton backend déployé
   withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
 });
 
 // Helpers
