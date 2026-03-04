@@ -47,7 +47,7 @@ const Invoice = () => {
     <div className="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded">
       <div id="invoice-content">
         <h2 className="text-2xl font-bold mb-4">Bill</h2>
-        <p><strong>Commande ID :</strong> {checkout._id}</p>
+        <p><strong>Commande ID :</strong> {checkoutowner._id}</p>
         <p><strong>Date :</strong> {date}</p>
         <p><strong>Time :</strong> {time}</p>
 
