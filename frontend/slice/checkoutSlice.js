@@ -26,6 +26,19 @@ export const fetchUserCheckouts = createAsyncThunk(
     }
   }
 );
+// Récupérer les détails d’un checkout
+export const fetchCheckoutDetails = createAsyncThunk(
+  "checkout/fetchCheckoutDetails",
+  async (checkoutId, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/checkout/${checkoutId}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Failed to fetch checkout details" });
+    }
+  }
+);
+
 
 const checkoutSlice = createSlice({
   name: "checkout",
@@ -71,7 +84,20 @@ const checkoutSlice = createSlice({
       .addCase(fetchUserCheckouts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Failed to fetch checkouts";
-      });
+      })
+    .addCase(fetchCheckoutDetails.pending, (state) => {
+  state.loading = true;
+  state.error = null;
+})
+.addCase(fetchCheckoutDetails.fulfilled, (state, action) => {
+  state.loading = false;
+  state.checkoutDetails = action.payload;
+})
+.addCase(fetchCheckoutDetails.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload?.message || "Failed to fetch checkout details";
+});
+
   },
 });
 
