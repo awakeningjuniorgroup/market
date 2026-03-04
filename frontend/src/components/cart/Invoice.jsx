@@ -13,8 +13,9 @@ const Invoice = () => {
   const time = now.toLocaleTimeString();
 
   const handleDownload = async () => {
+    if (!checkout) return; // ✅ éviter crash si checkout pas chargé
     const invoiceElement = document.getElementById("invoice-content");
-    const canvas = await html2canvas(invoiceElement, { scale: 2 }); // meilleure qualité
+    const canvas = await html2canvas(invoiceElement, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
 
     const pdf = new jsPDF("p", "mm", "a4");
@@ -28,11 +29,9 @@ const Invoice = () => {
     let heightLeft = imgHeight;
     let position = 0;
 
-    // Première page
     pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
     heightLeft -= pdfHeight;
 
-    // Pages suivantes si nécessaire
     while (heightLeft > 0) {
       position = heightLeft - imgHeight;
       pdf.addPage();
@@ -43,23 +42,39 @@ const Invoice = () => {
     pdf.save(`facture-${checkout._id}.pdf`);
   };
 
+  if (!checkout) {
+    return <p>Chargement de la facture...</p>; // ✅ affichage temporaire
+  }
+
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded">
       <div id="invoice-content">
         <h2 className="text-2xl font-bold mb-4">Bill</h2>
-        <p><strong>Commande ID :</strong> {checkout.owner._id}</p>
+        <p><strong>Commande ID :</strong> {checkout._id}</p>
+
+        {/* ✅ Affichage du propriétaire */}
+        {checkout.owner ? (
+          checkout.owner.type === "user" ? (
+            <p><strong>User ID :</strong> {checkout.owner.id}</p>
+          ) : (
+            <p><strong>Guest ID :</strong> {checkout.owner.id}</p>
+          )
+        ) : (
+          <p><strong>Owner :</strong> inconnu</p>
+        )}
+
         <p><strong>Date :</strong> {date}</p>
         <p><strong>Time :</strong> {time}</p>
 
         <h3 className="text-lg mt-6 mb-2">Coordonnate</h3>
-        <p>Firstname: {checkout.shippingAddress.firstName}</p>
-        <p>Phone: {checkout.shippingAddress.phone}</p>
-        <p>Location: {checkout.shippingAddress.quarter} - {checkout.shippingAddress.city}</p>
-        <p>Country: {checkout.shippingAddress.country}</p>
+        <p>Firstname: {checkout.shippingAddress?.firstName}</p>
+        <p>Phone: {checkout.shippingAddress?.phone}</p>
+        <p>Location: {checkout.shippingAddress?.quarter} - {checkout.shippingAddress?.city}</p>
+        <p>Country: {checkout.shippingAddress?.country}</p>
 
         <h3 className="text-lg mt-6 mb-2">Products</h3>
         <div className="border-t py-4">
-          {checkout.checkoutItems.map((item, index) => (
+          {checkout.checkoutItems?.map((item, index) => (
             <div key={index} className="flex justify-between border-b py-2">
               <span>{item.name} (x{item.quantity})</span>
               <span>{item.price?.toLocaleString()} FCFA</span>
@@ -67,17 +82,15 @@ const Invoice = () => {
           ))}
         </div>
 
-        {/* Frais de livraison affichés séparément */}
         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
           <p>Shipping fee</p>
-          <p>{checkout.shippingAddress.shippingFee?.toLocaleString()} FCFA</p>
+          <p>{checkout.shippingAddress?.shippingFee?.toLocaleString()} FCFA</p>
         </div>
 
-        {/* Total incluant les frais */}
         <div className="flex justify-between items-center text-lg mt-2 border-t pt-4 font-bold">
           <p>Total</p>
           <p>
-            {(checkout.totalPrice + (checkout.shippingAddress.shippingFee || 0)).toLocaleString()} FCFA
+            {(checkout.totalPrice + (checkout.shippingAddress?.shippingFee || 0)).toLocaleString()} FCFA
           </p>
         </div>
 
@@ -85,7 +98,6 @@ const Invoice = () => {
           ✅ Thanks for order!
         </p>
 
-        {/* QR Code vers ton site */}
         <div className="mt-6 flex justify-center">
           <QRCodeCanvas 
             value="https://kams-market12.onrender.com" 
