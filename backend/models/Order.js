@@ -26,16 +26,28 @@ const shippingAddressSchema = new mongoose.Schema(
 
 const orderSchema = new mongoose.Schema(
   {
+    // ✅ propriétaire de la commande
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
     guestId: { type: String, required: false },
+
+    // ✅ items de la commande
     orderItems: [orderItemSchema],
+
+    // ✅ adresse de livraison
     shippingAddress: shippingAddressSchema,
+
+    // ✅ infos paiement
     paymentMethod: { type: String, required: true },
     totalPrice: { type: Number, required: true },
+    paymentStatus: { type: String, default: "pending" },
+    paymentDetails: { type: Object },
+
+    // ✅ suivi
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
     deliveredAt: { type: Date },
+    finalizedAt: { type: Date },
   },
   { timestamps: true }
 );
