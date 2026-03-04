@@ -79,6 +79,19 @@ export const fetchCheckoutDetails = createAsyncThunk(
   }
 );
 
+export const fetchCheckoutById = createAsyncThunk(
+  "checkout/fetchCheckoutById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const response = await api.get(`/api/checkout/${id}`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Failed to fetch checkout" });
+    }
+  }
+);
+
+
 const checkoutSlice = createSlice({
   name: "checkout",
   initialState: {
@@ -116,7 +129,14 @@ const checkoutSlice = createSlice({
       })
       .addCase(fetchCheckoutDetails.fulfilled, (state, action) => {
         state.checkoutDetails = action.payload;
-      });
+      })
+     .addCase(fetchCheckoutById.pending, (state) => { 
+       state.loading = true; state.error = null; }) 
+      .addCase(fetchCheckoutById.fulfilled, (state, action) => { 
+        state.loading = false; state.checkout = action.payload;
+      })
+    .addCase(fetchCheckoutById.rejected, (state, action) => { 
+    state.loading = false; state.error = action.payload?.message || "Failed to fetch checkout"; });
   },
 });
 
