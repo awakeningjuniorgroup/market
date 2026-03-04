@@ -30,7 +30,13 @@ router.post("/", protect, async (req, res) => {
       isFinalized: false,
     });
 
-    res.status(201).json(newCheckout);
+    // ✅ Ajout du champ owner
+    const response = {
+      ...newCheckout.toObject(),
+      owner: { type: "user", id: req.user._id }
+    };
+
+    res.status(201).json(response);
   } catch (error) {
     console.error("❌ Error creating checkout session:", error.message);
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -50,9 +56,10 @@ router.post("/guest", async (req, res) => {
   }
 
   try {
+    const guestId = `GUEST-${Date.now()}`;
     const newCheckout = await Checkout.create({
       user: null,
-      guestId: `GUEST-${Date.now()}`,
+      guestId,
       checkoutItems,
       shippingAddress,
       paymentMethod: paymentMethod || "COD",
@@ -62,7 +69,13 @@ router.post("/guest", async (req, res) => {
       isFinalized: false,
     });
 
-    res.status(201).json(newCheckout);
+    // ✅ Ajout du champ owner
+    const response = {
+      ...newCheckout.toObject(),
+      owner: { type: "guest", id: guestId }
+    };
+
+    res.status(201).json(response);
   } catch (error) {
     console.error("❌ Error creating guest checkout session:", error.message);
     res.status(500).json({ message: "Server Error", error: error.message });
@@ -88,7 +101,14 @@ router.put("/:id/pay", protect, async (req, res) => {
       checkout.paidAt = Date.now();
       await checkout.save();
 
-      res.status(200).json(checkout);
+      const response = {
+        ...checkout.toObject(),
+        owner: checkout.user
+          ? { type: "user", id: checkout.user }
+          : { type: "guest", id: checkout.guestId }
+      };
+
+      res.status(200).json(response);
     } else {
       res.status(400).json({ message: "Invalid Payment Status" });
     }
@@ -131,7 +151,14 @@ router.post("/:id/finalize", async (req, res) => {
         await Cart.findOneAndDelete({ user: checkout.user });
       }
 
-      res.status(201).json(finalOrder);
+      const response = {
+        ...finalOrder.toObject(),
+        owner: checkout.user
+          ? { type: "user", id: checkout.user }
+          : { type: "guest", id: checkout.guestId }
+      };
+
+      res.status(201).json(response);
     } else if (checkout.isFinalized) {
       res.status(400).json({ message: "Checkout already finalized" });
     } else {
