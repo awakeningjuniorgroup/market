@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import api from "../api/axiosInstance.js"; // ton axiosInstance avec interceptors
+import api from "../api/axiosInstance.js";
 
 // Récupérer les commandes de l'utilisateur connecté
 export const fetchUserOrders = createAsyncThunk(
