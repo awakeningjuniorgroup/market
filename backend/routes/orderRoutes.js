@@ -12,7 +12,9 @@ const router = express.Router();
 router.get("/my-orders", protect, async (req, res) => {
   try {
     console.log("📦 [my-orders] Requête reçue pour user:", req.user._id);
+
     const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+
     console.log("📦 [my-orders] Résultat MongoDB:", orders);
     res.json(orders);
   } catch (error) {
@@ -21,7 +23,6 @@ router.get("/my-orders", protect, async (req, res) => {
   }
 });
 
-
 /**
  * @route GET /api/orders/:id
  * @desc Récupérer les détails d'une commande par ID
@@ -29,18 +30,19 @@ router.get("/my-orders", protect, async (req, res) => {
  */
 router.get("/:id", protect, async (req, res) => {
   try {
+    console.log("📦 [order-details] Requête reçue pour ID:", req.params.id);
+
     const order = await Order.findById(req.params.id).populate("user", "name email");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Vérifier que l'utilisateur est propriétaire de la commande
     if (order.user && order.user._id.toString() !== req.user._id.toString()) {
       return res.status(403).json({ message: "Not authorized to view this order" });
     }
 
-    console.log("📦 Détails commande récupérés:", order._id);
+    console.log("📦 [order-details] Commande trouvée:", order._id);
     res.json(order);
   } catch (error) {
     console.error("❌ Erreur GET /api/orders/:id:", error);
@@ -55,7 +57,7 @@ router.get("/:id", protect, async (req, res) => {
  */
 router.post("/", protect, async (req, res) => {
   try {
-    console.log("📦 Payload reçu pour création de commande:", req.body);
+    console.log("📦 [create-order] Payload reçu:", req.body);
 
     const { orderItems, shippingAddress, paymentMethod, totalPrice } = req.body;
 
@@ -73,7 +75,7 @@ router.post("/", protect, async (req, res) => {
       isDelivered: false,
     });
 
-    console.log("✅ Commande créée:", newOrder._id);
+    console.log("✅ [create-order] Commande créée:", newOrder._id);
     res.status(201).json(newOrder);
   } catch (error) {
     console.error("❌ Erreur POST /api/orders:", error);
