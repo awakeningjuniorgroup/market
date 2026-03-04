@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance.js";
 
-// Créer une commande
+// Créer une commande pour utilisateur connecté
 export const createCheckout = createAsyncThunk(
   "checkout/createCheckout",
   async (checkoutData, { rejectWithValue }) => {
@@ -10,6 +10,45 @@ export const createCheckout = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Checkout failed" });
+    }
+  }
+);
+
+// Créer une commande pour invité
+export const createGuestCheckout = createAsyncThunk(
+  "checkout/createGuestCheckout",
+  async (checkoutData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/api/checkout/guest", checkoutData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Guest checkout failed" });
+    }
+  }
+);
+
+// Finaliser un checkout (si tu veux changer son statut en commande validée)
+export const finalizeCheckout = createAsyncThunk(
+  "checkout/finalizeCheckout",
+  async (checkoutId, { rejectWithValue }) => {
+    try {
+      const response = await api.put(`/api/checkout/${checkoutId}/finalize`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Failed to finalize checkout" });
+    }
+  }
+);
+
+// Paiement via Orange Money
+export const initiateOrangeMoneyPayment = createAsyncThunk(
+  "checkout/initiateOrangeMoneyPayment",
+  async (checkoutId, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/checkout/${checkoutId}/orange-money`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Orange Money payment failed" });
     }
   }
 );
@@ -26,6 +65,7 @@ export const fetchUserCheckouts = createAsyncThunk(
     }
   }
 );
+
 // Récupérer les détails d’un checkout
 export const fetchCheckoutDetails = createAsyncThunk(
   "checkout/fetchCheckoutDetails",
@@ -38,7 +78,6 @@ export const fetchCheckoutDetails = createAsyncThunk(
     }
   }
 );
-
 
 const checkoutSlice = createSlice({
   name: "checkout",
@@ -60,6 +99,7 @@ const checkoutSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // createCheckout
       .addCase(createCheckout.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -71,33 +111,33 @@ const checkoutSlice = createSlice({
       })
       .addCase(createCheckout.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload?.message || "Checkout failed";
+        state.error = action.payload?.message;
       })
-      .addCase(fetchUserCheckouts.pending, (state) => {
-        state.loading = true;
-        state.error = null;
+
+      // createGuestCheckout
+      .addCase(createGuestCheckout.fulfilled, (state, action) => {
+        state.checkouts.push(action.payload);
       })
+
+      // finalizeCheckout
+      .addCase(finalizeCheckout.fulfilled, (state, action) => {
+        state.checkoutDetails = action.payload;
+      })
+
+      // initiateOrangeMoneyPayment
+      .addCase(initiateOrangeMoneyPayment.fulfilled, (state, action) => {
+        state.checkoutDetails = action.payload;
+      })
+
+      // fetchUserCheckouts
       .addCase(fetchUserCheckouts.fulfilled, (state, action) => {
-        state.loading = false;
         state.checkouts = action.payload;
       })
-      .addCase(fetchUserCheckouts.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload?.message || "Failed to fetch checkouts";
-      })
-    .addCase(fetchCheckoutDetails.pending, (state) => {
-  state.loading = true;
-  state.error = null;
-})
-.addCase(fetchCheckoutDetails.fulfilled, (state, action) => {
-  state.loading = false;
-  state.checkoutDetails = action.payload;
-})
-.addCase(fetchCheckoutDetails.rejected, (state, action) => {
-  state.loading = false;
-  state.error = action.payload?.message || "Failed to fetch checkout details";
-});
 
+      // fetchCheckoutDetails
+      .addCase(fetchCheckoutDetails.fulfilled, (state, action) => {
+        state.checkoutDetails = action.payload;
+      });
   },
 });
 
