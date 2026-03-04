@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchAllOrders, updateOrderStatus } from '../../../slice/adminOrderSlice';
+import { fetchAllOrders, updateOrderStatus, deleteOrder } from '../../../slice/adminOrderSlice';
 
 const OrderManagement = () => {
   const dispatch = useDispatch();
@@ -22,6 +22,12 @@ const OrderManagement = () => {
     dispatch(updateOrderStatus({ id: orderId, status }));
   };
 
+  const handleDelete = (orderId) => {
+    if (window.confirm("Are you sure you want to delete this order?")) {
+      dispatch(deleteOrder(orderId));
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
@@ -30,7 +36,7 @@ const OrderManagement = () => {
       <h2 className="text-2xl font-bold mb-6">Order Management</h2>
       <div className="overflow-x-auto shadow-md sm:rounded-lg">
         <table className="min-w-full text-left uppercase text-gray-700">
-          <thead>
+          <thead className="bg-gray-100">
             <tr>
               <th className="py-3 px-4">Order ID</th>
               <th className="py-3 px-4">Customer</th>
@@ -46,10 +52,7 @@ const OrderManagement = () => {
           <tbody>
             {orders.length > 0 ? (
               orders.map((order) => (
-                <tr
-                  key={order._id}
-                  className="border-b hover:bg-gray-50 cursor-pointer"
-                >
+                <tr key={order._id} className="border-b hover:bg-gray-50">
                   <td className="py-4 px-4 font-medium text-gray-900 whitespace-nowrap">
                     #{order._id}
                   </td>
@@ -61,9 +64,9 @@ const OrderManagement = () => {
                   <td className="p-4">{order.shippingAddress?.city || "-"}</td>
                   <td className="p-4">{order.shippingAddress?.country || "-"}</td>
                   <td className="p-4">{order.shippingAddress?.phone || "-"}</td>
-                  <td className="p-4">{order.quarter || "-"}</td>
-                  <td className="p-4">
-                    FCFA {order.totalPrice?.toFixed(2)}
+                  <td className="p-4">{order.shippingAddress?.quarter || "-"}</td>
+                  <td className="p-4 font-semibold">
+                    FCFA {order.totalPrice?.toLocaleString()}
                   </td>
                   <td className="p-4">
                     <select
@@ -80,21 +83,25 @@ const OrderManagement = () => {
                       <option value="Cancelled">Cancelled</option>
                     </select>
                   </td>
-                  <td className="p-4">
+                  <td className="p-4 flex gap-2">
                     <button
-                      onClick={() =>
-                        handleStatusChange(order._id, "Delivered")
-                      }
+                      onClick={() => handleStatusChange(order._id, "Delivered")}
                       className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                     >
                       Mark as Delivered
+                    </button>
+                    <button
+                      onClick={() => handleDelete(order._id)}
+                      className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={9} className="text-center">
+                <td colSpan={9} className="text-center py-4">
                   No orders found.
                 </td>
               </tr>
