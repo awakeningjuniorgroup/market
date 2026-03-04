@@ -1,68 +1,66 @@
-const mongoose = require("mongoose");
 
-const orderItemSchema = new mongoose.Schema(
-  {
-    name: { type: String, required: true },
-    image: { type: String },
-    price: { type: Number, required: true },
-    quantity: { type: Number, required: true },
-    size: { type: String },
-    color: { type: String },
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product", // si tu as un modèle Product
-      required: false,
-    },
-  },
-  { _id: false }
-);
+const express = require("express");
+const Checkout = require("../models/Checkout");
+const { protect } = require("../middleware/authMiddleware");
 
-const shippingAddressSchema = new mongoose.Schema(
-  {
-    firstName: { type: String, required: true },
-    phone: { type: String, required: true },
-    quarter: { type: String, required: true },
-    city: { type: String, required: true },
-    country: { type: String, required: true },
-  },
-  { _id: false }
-);
+const router = express.Router();
 
-const orderSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false, // null si invité
-    },
-    guestId: {
-      type: String,
-      required: false, // identifiant unique pour les invités
-    },
-    orderItems: [orderItemSchema],
-    shippingAddress: shippingAddressSchema,
-    paymentMethod: {
-      type: String,
-      enum: ["COD", "PayPal", "OrangeMoney", "pending"],
-      default: "COD",
-    },
-    totalPrice: { type: Number, required: true },
+// Créer une commande (checkout)
+router.post("/", protect, async (req, res) => {
+  try {
+    console.log("📦 [create-checkout] Payload reçu:", req.body);
 
-    // Paiement
-    isPaid: { type: Boolean, default: false },
-    paidAt: { type: Date },
-    paymentStatus: {
-      type: String,
-      enum: ["pending", "paid", "failed"],
-      default: "pending",
-    },
-    paymentDetails: { type: Object },
+    const { checkoutItems, shippingAddress, paymentMethod, totalPrice } = req.body;
 
-    // Livraison
-    isDelivered: { type: Boolean, default: false },
-    deliveredAt: { type: Date },
-  },
-  { timestamps: true }
-);
+    if (!checkoutItems || checkoutItems.length === 0) {
+      return res.status(400).json({ message: "No items in checkout" });
+    }
 
-module.exports = mongoose.model("Order", orderSchema);
+    const newCheckout = await Checkout.create({
+      user: req.user._id,
+      checkoutItems,
+      shippingAddress,
+      paymentMethod,
+      totalPrice,
+    });
+
+    console.log("✅ [create-checkout] Commande créée:", newCheckout._id);
+    res.status(201).json(newCheckout);
+  } catch (error) {
+    console.error("❌ Erreur POST /api/checkout:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
+// Récupérer les commandes de l'utilisateur
+router.get("/my-checkouts", protect, async (req, res) => {
+  try {
+    const checkouts = await Checkout.find({ user: req.user._id }).sort({ createdAt: -1 });
+    res.json(checkouts);
+  } catch (error) {
+    console.error("❌ Erreur GET /api/checkout/my-checkouts:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
+// Récupérer une commande par ID
+router.get("/:id", protect, async (req, res) => {
+  try {
+    const checkout = await Checkout.findById(req.params.id).populate("user", "name email");
+
+    if (!checkout) {
+      return res.status(404).json({ message: "Checkout not found" });
+    }
+
+    if (checkout.user && checkout.user._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not authorized to view this checkout" });
+    }
+
+    res.json(checkout);
+  } catch (error) {
+    console.error("❌ Erreur GET /api/checkout/:id:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
+module.exports = router;
