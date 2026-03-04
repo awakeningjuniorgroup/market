@@ -1,21 +1,21 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchUserOrders } from "../../slice/orderslice"; // ⚠️ vérifie le chemin exact
+import { fetchUserCheckouts } from "../../slice/checkoutSlice"; // ⚠️ vérifie le chemin exact
 
 const MyOrdersPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // ✅ Récupère les données depuis Redux
-  const { orders, loading, error } = useSelector((state) => state.orders);
+  const { checkouts, loading, error } = useSelector((state) => state.checkout);
 
   useEffect(() => {
-    dispatch(fetchUserOrders());
+    dispatch(fetchUserCheckouts());
   }, [dispatch]);
 
-  const handleRowClick = (orderId) => {
-    navigate(`/order/${orderId}`);
+  const handleRowClick = (checkoutId) => {
+    navigate(`/checkout/${checkoutId}`);
   };
 
   if (loading) return <p>Loading...</p>;
@@ -23,13 +23,13 @@ const MyOrdersPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
-      <h2 className="text-xl sm:text-2xl font-bold mb-6">My Orders</h2>
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">My Checkouts</h2>
       <div className="relative shadow-md sm:rounded-lg overflow-hidden">
         <table className="min-w-full text-left text-gray-500">
           <thead>
             <tr>
               <th className="py-2 px-4 sm:py-3">Image</th>
-              <th className="py-2 px-4 sm:py-3">Order Id</th>
+              <th className="py-2 px-4 sm:py-3">Checkout Id</th>
               <th className="py-2 px-4 sm:py-3">Created</th>
               <th className="py-2 px-4 sm:py-3">Shipping Address</th>
               <th className="py-2 px-4 sm:py-3">Items</th>
@@ -38,47 +38,47 @@ const MyOrdersPage = () => {
             </tr>
           </thead>
           <tbody>
-            {orders && orders.length > 0 ? (
-              orders.map((order) => (
+            {checkouts && checkouts.length > 0 ? (
+              checkouts.map((checkout) => (
                 <tr
-                  key={order._id}
-                  onClick={() => handleRowClick(order._id)}
+                  key={checkout._id}
+                  onClick={() => handleRowClick(checkout._id)}
                   className="border-b hover:border-gray-50 cursor-pointer"
                 >
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
                     <img
-                      src={order.orderItems[0]?.image}
-                      alt={order.orderItems[0]?.name}
+                      src={checkout.checkoutItems[0]?.image}
+                      alt={checkout.checkoutItems[0]?.name}
                       className="w-12 h-12 object-cover rounded-lg"
                     />
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4 font-medium text-gray-900 whitespace-nowrap">
-                    #{order._id}
+                    #{checkout._id}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
-                    {new Date(order.createdAt).toLocaleDateString()}{" "}
-                    {new Date(order.createdAt).toLocaleTimeString()}
+                    {new Date(checkout.createdAt).toLocaleDateString()}{" "}
+                    {new Date(checkout.createdAt).toLocaleTimeString()}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
-                    {order.shippingAddress
-                      ? `${order.shippingAddress.city}, ${order.shippingAddress.country}`
+                    {checkout.shippingAddress
+                      ? `${checkout.shippingAddress.city}, ${checkout.shippingAddress.country}`
                       : "N/A"}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
-                    {order.orderItems.length}
+                    {checkout.checkoutItems.length}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
-                    ${order.totalPrice}
+                    ${checkout.totalPrice}
                   </td>
                   <td className="py-2 px-2 sm:py-4 sm:px-4">
                     <span
                       className={`${
-                        order.isPaid
+                        checkout.isPaid
                           ? "bg-green-300 text-green-800"
                           : "bg-red-100 text-red-700"
                       } px-2 py-1 rounded-full text-xs sm:text-sm font-medium`}
                     >
-                      {order.isPaid ? "Paid" : "Pending"}
+                      {checkout.isPaid ? "Paid" : "Pending"}
                     </span>
                   </td>
                 </tr>
@@ -89,7 +89,7 @@ const MyOrdersPage = () => {
                   colSpan={7}
                   className="py-4 px-4 text-center text-gray-500"
                 >
-                  You have no orders
+                  You have no checkouts
                 </td>
               </tr>
             )}
