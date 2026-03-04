@@ -15,7 +15,7 @@ const checkoutItemSchema = new mongoose.Schema(
 
 const shippingAddressSchema = new mongoose.Schema(
   {
-    firstname: { type: String, required: true },
+    firstName: { type: String, required: true },
     phone: { type: String, required: true },
     quarter: { type: String, required: true },
     city: { type: String, required: true },
