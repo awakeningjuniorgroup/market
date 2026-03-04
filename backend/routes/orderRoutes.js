@@ -11,14 +11,16 @@ const router = express.Router();
  */
 router.get("/my-orders", protect, async (req, res) => {
   try {
+    console.log("📦 [my-orders] Requête reçue pour user:", req.user._id);
     const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
-    console.log("📦 Commandes récupérées pour:", req.user._id);
+    console.log("📦 [my-orders] Résultat MongoDB:", orders);
     res.json(orders);
   } catch (error) {
     console.error("❌ Erreur GET /api/orders/my-orders:", error);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
+
 
 /**
  * @route GET /api/orders/:id
