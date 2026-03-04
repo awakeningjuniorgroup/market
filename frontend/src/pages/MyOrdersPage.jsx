@@ -7,7 +7,6 @@ const MyOrdersPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // ✅ Récupère les données depuis Redux
   const { checkouts, loading, error } = useSelector((state) => state.checkout);
 
   useEffect(() => {
@@ -26,15 +25,17 @@ const MyOrdersPage = () => {
       <h2 className="text-xl sm:text-2xl font-bold mb-6">My Checkouts</h2>
       <div className="relative shadow-md sm:rounded-lg overflow-hidden">
         <table className="min-w-full text-left text-gray-500">
-          <thead>
+          <thead className="bg-gray-100">
             <tr>
-              <th className="py-2 px-4 sm:py-3">Image</th>
-              <th className="py-2 px-4 sm:py-3">Checkout Id</th>
-              <th className="py-2 px-4 sm:py-3">Created</th>
-              <th className="py-2 px-4 sm:py-3">Shipping Address</th>
-              <th className="py-2 px-4 sm:py-3">Items</th>
-              <th className="py-2 px-4 sm:py-3">Price</th>
-              <th className="py-2 px-4 sm:py-3">Status</th>
+              <th className="py-2 px-4">Image</th>
+              <th className="py-2 px-4">Checkout Id</th>
+              <th className="py-2 px-4">Owner</th>
+              <th className="py-2 px-4">Created</th>
+              <th className="py-2 px-4">Shipping Address</th>
+              <th className="py-2 px-4">Items</th>
+              <th className="py-2 px-4">Payment Method</th>
+              <th className="py-2 px-4">Price</th>
+              <th className="py-2 px-4">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -43,34 +44,42 @@ const MyOrdersPage = () => {
                 <tr
                   key={checkout._id}
                   onClick={() => handleRowClick(checkout._id)}
-                  className="border-b hover:border-gray-50 cursor-pointer"
+                  className="border-b hover:bg-gray-50 cursor-pointer"
                 >
-                  <td className="py-2 px-2 sm:py-4 sm:px-4">
+                  <td className="py-2 px-2">
                     <img
                       src={checkout.checkoutItems[0]?.image}
                       alt={checkout.checkoutItems[0]?.name}
                       className="w-12 h-12 object-cover rounded-lg"
                     />
                   </td>
-                  <td className="py-2 px-2 sm:py-4 sm:px-4 font-medium text-gray-900 whitespace-nowrap">
+                  <td className="py-2 px-2 font-medium text-gray-900">
                     #{checkout._id}
                   </td>
-                  <td className="py-2 px-2 sm:py-4 sm:px-4">
+                  <td className="py-2 px-2">
+                    {checkout.owner
+                      ? checkout.owner.type === "user"
+                        ? `User: ${checkout.owner.id}`
+                        : `Guest: ${checkout.owner.id}`
+                      : "N/A"}
+                  </td>
+                  <td className="py-2 px-2">
                     {new Date(checkout.createdAt).toLocaleDateString()}{" "}
                     {new Date(checkout.createdAt).toLocaleTimeString()}
                   </td>
-                  <td className="py-2 px-2 sm:py-4 sm:px-4">
+                  <td className="py-2 px-2">
                     {checkout.shippingAddress
-                      ? `${checkout.shippingAddress.city}, ${checkout.shippingAddress.country}`
+                      ? `${checkout.shippingAddress.quarter}, ${checkout.shippingAddress.city}, ${checkout.shippingAddress.country}`
                       : "N/A"}
                   </td>
-                  <td className="py-2 px-2 sm:py-4 sm:px-4">
-                    {checkout.checkoutItems.length}
+                  <td className="py-2 px-2">
+                    {checkout.checkoutItems.length} items
                   </td>
-                  <td className="py-2 px-2 sm:py-4 sm:px-4">
-                    ${checkout.totalPrice}
+                  <td className="py-2 px-2">{checkout.paymentMethod}</td>
+                  <td className="py-2 px-2 font-semibold">
+                    {checkout.totalPrice.toLocaleString()} FCFA
                   </td>
-                  <td className="py-2 px-2 sm:py-4 sm:px-4">
+                  <td className="py-2 px-2">
                     <span
                       className={`${
                         checkout.isPaid
@@ -86,7 +95,7 @@ const MyOrdersPage = () => {
             ) : (
               <tr>
                 <td
-                  colSpan={7}
+                  colSpan={9}
                   className="py-4 px-4 text-center text-gray-500"
                 >
                   You have no checkouts
