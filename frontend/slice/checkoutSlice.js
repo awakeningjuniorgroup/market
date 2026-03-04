@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../api/axiosInstance.js";
 
-// Créer un checkout
+// Créer un checkout (utilisateur connecté)
 export const createCheckout = createAsyncThunk(
   "checkout/createCheckout",
   async (checkoutData, { rejectWithValue }) => {
@@ -14,7 +14,46 @@ export const createCheckout = createAsyncThunk(
   }
 );
 
-// Récupérer les checkouts de l'utilisateur
+// Créer un checkout invité
+export const createGuestCheckout = createAsyncThunk(
+  "checkout/createGuestCheckout",
+  async (checkoutData, { rejectWithValue }) => {
+    try {
+      const response = await api.post("/api/checkout/guest", checkoutData);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Guest checkout failed" });
+    }
+  }
+);
+
+// Finaliser un checkout → Order
+export const finalizeCheckout = createAsyncThunk(
+  "checkout/finalizeCheckout",
+  async (checkoutId, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/orders/${checkoutId}/finalize`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Failed to finalize checkout" });
+    }
+  }
+);
+
+// Paiement Orange Money
+export const initiateOrangeMoneyPayment = createAsyncThunk(
+  "checkout/initiateOrangeMoneyPayment",
+  async (checkoutId, { rejectWithValue }) => {
+    try {
+      const response = await api.post(`/api/checkout/${checkoutId}/orange-money`);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Orange Money payment failed" });
+    }
+  }
+);
+
+// Récupérer les checkouts utilisateur
 export const fetchUserCheckouts = createAsyncThunk(
   "checkout/fetchUserCheckouts",
   async (_, { rejectWithValue }) => {
@@ -27,7 +66,7 @@ export const fetchUserCheckouts = createAsyncThunk(
   }
 );
 
-// Récupérer les détails d’un checkout
+// Récupérer détails d’un checkout
 export const fetchCheckoutDetails = createAsyncThunk(
   "checkout/fetchCheckoutDetails",
   async (checkoutId, { rejectWithValue }) => {
@@ -62,6 +101,15 @@ const checkoutSlice = createSlice({
     builder
       .addCase(createCheckout.fulfilled, (state, action) => {
         state.checkouts.push(action.payload);
+      })
+      .addCase(createGuestCheckout.fulfilled, (state, action) => {
+        state.checkouts.push(action.payload);
+      })
+      .addCase(finalizeCheckout.fulfilled, (state, action) => {
+        state.checkouts.push(action.payload);
+      })
+      .addCase(initiateOrangeMoneyPayment.fulfilled, (state, action) => {
+        state.checkoutDetails = action.payload;
       })
       .addCase(fetchUserCheckouts.fulfilled, (state, action) => {
         state.checkouts = action.payload;
