@@ -1,31 +1,15 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import api from "../api/axiosInstance";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import api from "../api/axiosInstance.js"; // ton axiosInstance avec interceptors
 
-// --- CREATE ORDER ---
-export const createOrder = createAsyncThunk(
-  "orders/createOrder",
-  async (orderData, { rejectWithValue }) => {
-    try {
-      console.log("📦 [createOrder] Sending orderData:", orderData);
-      const { data } = await api.post("/api/orders", orderData);
-      console.log("✅ [createOrder] Response data:", data);
-      return data;
-    } catch (error) {
-      console.error("❌ [createOrder] Error:", error.response?.data || error.message);
-      return rejectWithValue(error.response?.data || { message: "Failed to create order" });
-    }
-  }
-);
-
-// --- FETCH USER ORDERS ---
+// Récupérer les commandes de l'utilisateur connecté
 export const fetchUserOrders = createAsyncThunk(
   "orders/fetchUserOrders",
   async (_, { rejectWithValue }) => {
     try {
       console.log("📦 [fetchUserOrders] Fetching user orders...");
-      const { data } = await api.get("/api/orders/my-orders");
-      console.log("✅ [fetchUserOrders] Response data:", data);
-      return data;
+      const response = await api.get("/api/orders/my-orders");
+      console.log("✅ [fetchUserOrders] Response data:", response.data);
+      return response.data;
     } catch (error) {
       console.error("❌ [fetchUserOrders] Error:", error.response?.data || error.message);
       return rejectWithValue(error.response?.data || { message: "Failed to fetch orders" });
@@ -33,18 +17,34 @@ export const fetchUserOrders = createAsyncThunk(
   }
 );
 
-// --- FETCH ORDER DETAILS ---
+// Récupérer les détails d'une commande
 export const fetchOrderDetails = createAsyncThunk(
   "orders/fetchOrderDetails",
-  async (orderID, { rejectWithValue }) => {
+  async (orderId, { rejectWithValue }) => {
     try {
-      console.log("📦 [fetchOrderDetails] Fetching details for orderID:", orderID);
-      const { data } = await api.get(`/api/orders/${orderID}`);
-      console.log("✅ [fetchOrderDetails] Response data:", data);
-      return data;
+      console.log("📦 [fetchOrderDetails] Fetching order:", orderId);
+      const response = await api.get(`/api/orders/${orderId}`);
+      console.log("✅ [fetchOrderDetails] Response data:", response.data);
+      return response.data;
     } catch (error) {
       console.error("❌ [fetchOrderDetails] Error:", error.response?.data || error.message);
       return rejectWithValue(error.response?.data || { message: "Failed to fetch order details" });
+    }
+  }
+);
+
+// Créer une nouvelle commande
+export const createOrder = createAsyncThunk(
+  "orders/createOrder",
+  async (orderData, { rejectWithValue }) => {
+    try {
+      console.log("📦 [createOrder] Payload envoyé:", orderData);
+      const response = await api.post("/api/orders", orderData);
+      console.log("✅ [createOrder] Response data:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("❌ [createOrder] Error:", error.response?.data || error.message);
+      return rejectWithValue(error.response?.data || { message: "Failed to create order" });
     }
   }
 );
@@ -53,75 +53,66 @@ const orderSlice = createSlice({
   name: "orders",
   initialState: {
     orders: [],
-    totalOrders: 0,
     orderDetails: null,
-    currentOrder: null,
     loading: false,
     error: null,
+    success: false,
   },
   reducers: {
-    clearCurrentOrder: (state) => {
-      console.log("🧹 [clearCurrentOrder] Resetting currentOrder");
-      state.currentOrder = null;
+    resetOrderState: (state) => {
+      state.orders = [];
+      state.orderDetails = null;
+      state.loading = false;
+      state.error = null;
+      state.success = false;
     },
   },
   extraReducers: (builder) => {
     builder
-      // --- CREATE ORDER ---
-      .addCase(createOrder.pending, (state) => {
-        console.log("⏳ [createOrder] Pending...");
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(createOrder.fulfilled, (state, action) => {
-        console.log("✅ [createOrder] Fulfilled:", action.payload);
-        state.loading = false;
-        state.currentOrder = action.payload;
-        state.orders.push(action.payload);
-        state.totalOrders = state.orders.length;
-      })
-      .addCase(createOrder.rejected, (state, action) => {
-        console.error("❌ [createOrder] Rejected:", action.payload);
-        state.loading = false;
-        state.error = action.payload?.message || "Failed to create order";
-      })
-
-      // --- FETCH USER ORDERS ---
+      // fetchUserOrders
       .addCase(fetchUserOrders.pending, (state) => {
-        console.log("⏳ [fetchUserOrders] Pending...");
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchUserOrders.fulfilled, (state, action) => {
-        console.log("✅ [fetchUserOrders] Fulfilled:", action.payload);
         state.loading = false;
-        state.orders = Array.isArray(action.payload) ? action.payload : [];
-        state.totalOrders = state.orders.length;
+        state.orders = action.payload;
       })
       .addCase(fetchUserOrders.rejected, (state, action) => {
-        console.error("❌ [fetchUserOrders] Rejected:", action.payload);
         state.loading = false;
         state.error = action.payload?.message || "Failed to fetch orders";
       })
 
-      // --- FETCH ORDER DETAILS ---
+      // fetchOrderDetails
       .addCase(fetchOrderDetails.pending, (state) => {
-        console.log("⏳ [fetchOrderDetails] Pending...");
         state.loading = true;
         state.error = null;
       })
       .addCase(fetchOrderDetails.fulfilled, (state, action) => {
-        console.log("✅ [fetchOrderDetails] Fulfilled:", action.payload);
         state.loading = false;
         state.orderDetails = action.payload;
       })
       .addCase(fetchOrderDetails.rejected, (state, action) => {
-        console.error("❌ [fetchOrderDetails] Rejected:", action.payload);
         state.loading = false;
         state.error = action.payload?.message || "Failed to fetch order details";
+      })
+
+      // createOrder
+      .addCase(createOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(createOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.orders.push(action.payload); // ajoute la nouvelle commande
+      })
+      .addCase(createOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Failed to create order";
       });
   },
 });
 
-export const { clearCurrentOrder } = orderSlice.actions;
+export const { resetOrderState } = orderSlice.actions;
 export default orderSlice.reducer;
