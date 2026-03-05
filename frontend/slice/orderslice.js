@@ -57,20 +57,58 @@ const orderSlice = createSlice({
       state.error = null;
       state.success = false;
     },
+    resetOrderDetails: (state) => {
+      state.orderDetails = null;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
+      // finalizeCheckout
+      .addCase(finalizeCheckout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = false;
+      })
       .addCase(finalizeCheckout.fulfilled, (state, action) => {
+        state.loading = false;
         state.orders.push(action.payload);
+        state.success = true;
+      })
+      .addCase(finalizeCheckout.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Failed to finalize checkout";
+      })
+
+      // fetchUserOrders
+      .addCase(fetchUserOrders.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(fetchUserOrders.fulfilled, (state, action) => {
-        state.orders = action.payload;
+        state.loading = false;
+        state.orders = Array.isArray(action.payload) ? action.payload : [];
+      })
+      .addCase(fetchUserOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Failed to fetch orders";
+      })
+
+      // fetchOrderDetails
+      .addCase(fetchOrderDetails.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
       .addCase(fetchOrderDetails.fulfilled, (state, action) => {
+        state.loading = false;
         state.orderDetails = action.payload;
+      })
+      .addCase(fetchOrderDetails.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Failed to fetch order details";
       });
   },
 });
 
-export const { resetOrderState } = orderSlice.actions;
+export const { resetOrderState, resetOrderDetails } = orderSlice.actions;
 export default orderSlice.reducer;
