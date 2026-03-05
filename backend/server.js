@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 
 // Import des routes
 const userRoutes = require("./routes/userRoutes");
@@ -20,7 +21,7 @@ const adminUserRoutes = require("./routes/adminRoutes");
 const adminProductRoutes = require("./routes/productAdminRoutes"); 
 const adminOrderRoutes = require("./routes/adminOrderRoutes"); 
 
-// Initialisation de l'app
+// Initialisation
 const app = express();
 dotenv.config();
 
@@ -29,7 +30,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ 
-  origin: "https://kams-market12.onrender.com", // ton domaine frontend
+  origin: "https://kams-market12.onrender.com", 
   credentials: true,
   allowedHeaders: ["Authorization", "Content-Type"],
 }));
@@ -39,10 +40,6 @@ connectDB();
 
 // Port
 const PORT = process.env.PORT || 9000;
-// Route de test
-app.get("/", (req, res) => {
-  res.send("WELCOME TO RABBIT API!");
-});
 
 // API Routes publiques
 app.use("/api/users", userRoutes);
@@ -60,6 +57,14 @@ app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
+// ✅ Servir le frontend build (dist)
+const __dirnamePath = path.resolve();
+app.use(express.static(path.join(__dirnamePath, "dist")));
+
+// ✅ Catch-all pour React Router (Express 5 → utiliser regex)
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.resolve(__dirnamePath, "dist", "index.html"));
+});
 
 // Lancement du serveur
 app.listen(PORT, () => {
