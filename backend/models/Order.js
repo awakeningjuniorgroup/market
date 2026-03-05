@@ -20,6 +20,7 @@ const shippingAddressSchema = new mongoose.Schema(
     quarter: { type: String, required: true },
     city: { type: String, required: true },
     country: { type: String, required: true },
+    shippingFee: { type: Number, default: 0 }, // ✅ frais de livraison
   },
   { _id: false }
 );
@@ -28,7 +29,7 @@ const orderSchema = new mongoose.Schema(
   {
     // ✅ propriétaire de la commande
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: false },
-    guestId: { type: String, required: false },
+    guestId: { type: String, required: false }, // ✅ pour les invités
 
     // ✅ items de la commande
     orderItems: [orderItemSchema],
@@ -43,6 +44,7 @@ const orderSchema = new mongoose.Schema(
     paymentDetails: { type: Object },
 
     // ✅ suivi
+    status: { type: String, default: "Processing" }, // ✅ statut global
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
