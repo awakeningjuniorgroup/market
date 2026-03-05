@@ -5,75 +5,50 @@ const connectDB = require("./config/db");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 
-// Import des routes
-const userRoutes = require("./routes/userRoutes");
-const productRoutes = require("./routes/productRoutes");
-const cartRoutes = require("./routes/cartRoutes");
-const checkoutRoutes = require("./routes/checkoutRoutes");
-const orderRoutes = require("./routes/orderRoutes");
-const uploadRoutes = require("./routes/uploadRoutes");
-const subscribeRoutes = require("./routes/subscribeRoutes");
-const orangeMoneyRoutes = require("./routes/orangeMoneyRoutes");
-const authRoutes = require("./routes/authRoutes");
+// Import des routes API...
+// (tes imports userRoutes, productRoutes, etc.)
 
-// Routes Admin
-const adminUserRoutes = require("./routes/adminRoutes"); 
-const adminProductRoutes = require("./routes/productAdminRoutes"); 
-const adminOrderRoutes = require("./routes/adminOrderRoutes"); 
-
-// Initialisation
-const app = express();
 dotenv.config();
+connectDB();
+
+const app = express();
 
 // Middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ 
-  origin: "https://kams-market12.onrender.com", 
+app.use(cors({
+  origin: "https://kams-market12.onrender.com",
   credentials: true,
   allowedHeaders: ["Authorization", "Content-Type"],
 }));
 
-// Connexion DB
-connectDB();
+// API routes
+app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/products", require("./routes/productRoutes"));
+app.use("/api/cart", require("./routes/cartRoutes"));
+app.use("/api/checkout", require("./routes/checkoutRoutes"));
+app.use("/api/orders", require("./routes/orderRoutes"));
+app.use("/api/upload", require("./routes/uploadRoutes"));
+app.use("/api/subscribe", require("./routes/subscribeRoutes"));
+app.use("/api/orange-money", require("./routes/orangeMoneyRoutes"));
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/admin/users", require("./routes/adminRoutes"));
+app.use("/api/admin/products", require("./routes/productAdminRoutes"));
+app.use("/api/admin/orders", require("./routes/adminOrderRoutes"));
 
-// Port
-const PORT = process.env.PORT || 9000;
-
-// API Routes publiques
-app.use("/api/users", userRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/cart", cartRoutes);
-app.use("/api/checkout", checkoutRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/subscribe", subscribeRoutes);
-app.use("/api/orange-money", orangeMoneyRoutes);
-app.use("/api/auth", authRoutes);
-
-// API Routes Admin
-app.use("/api/admin/users", adminUserRoutes);
-app.use("/api/admin/products", adminProductRoutes);
-app.use("/api/admin/orders", adminOrderRoutes);
-
-// ✅ Servir le frontend build (dist)
+// ✅ Servir le frontend build
 const __dirnamePath = path.resolve();
 app.use(express.static(path.join(__dirnamePath, "dist")));
 
-
-// ✅ Catch-all uniquement pour les routes frontend
-app.get("*", (req, res) => {
-  // Si la requête vise un fichier (ex: .js, .css, .png), ne pas renvoyer index.html
-  if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|svg)$/)) {
-    return res.status(404).end();
-  }
-  // Sinon, renvoyer index.html pour React Router
+// ✅ Catch-all pour React Router
+// Express 5 → utiliser regex et exclure les assets
+app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.resolve(__dirnamePath, "dist", "index.html"));
 });
 
-
-// Lancement du serveur
+// Port
+const PORT = process.env.PORT || 9000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT} (${process.env.NODE_ENV})`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
