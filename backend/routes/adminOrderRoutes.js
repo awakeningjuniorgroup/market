@@ -111,19 +111,13 @@ router.delete("/:id", protect, isAdmin, async (req, res) => {
  * @desc Create a new order (user or guest)
  * @access Public (guest) / Private (user)
  */
-router.post("/", protectOptional, async (req, res) => {
-  // protectOptional est un middleware qui remplit req.user si token valide, sinon laisse req.user undefined
+router.post("/", async (req, res) => {
   console.log("📦 [createOrder] Body reçu:", req.body);
 
   try {
-    // Validation simple (à améliorer)
-    if (!req.body.orderItems || req.body.orderItems.length === 0) {
-      return res.status(400).json({ message: "Order items are required" });
-    }
-
     const order = new Order({
-      user: req.user ? req.user._id : null,
-      guestId: req.user ? null : req.body.guestId,
+      user: req.user?._id || null, // si utilisateur connecté
+      guestId: !req.user ? req.body.guestId : null, // si invité
       orderItems: req.body.orderItems,
       shippingAddress: req.body.shippingAddress,
       paymentMethod: req.body.paymentMethod,
@@ -139,6 +133,5 @@ router.post("/", protectOptional, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
 
 module.exports = router;
