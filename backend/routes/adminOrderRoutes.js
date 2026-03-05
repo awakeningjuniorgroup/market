@@ -94,4 +94,36 @@ router.delete("/:id", protect, isAdmin, async (req, res) => {
   }
 });
 
+
+/**
+ * @route POST /api/orders
+ * @desc Create a new order
+ * @access Private (user must be logged in or guest logic)
+ */
+router.post("/", protect, async (req, res) => {
+  console.log("📦 [createOrder] Body reçu:", req.body);
+
+  try {
+    const order = new Order({
+      user: req.user?._id || null, // si utilisateur connecté
+      orderItems: req.body.orderItems,
+      shippingAddress: req.body.shippingAddress,
+      paymentMethod: req.body.paymentMethod,
+      totalPrice: req.body.totalPrice,
+    });
+
+    const savedOrder = await order.save();
+    console.log("✅ [createOrder] Order sauvegardé:", savedOrder);
+
+    res.status(201).json(savedOrder);
+  } catch (error) {
+    console.error("❌ [createOrder] Erreur:", error.message);
+    res.status(400).json({ message: error.message });
+  }
+});
+
+
+
+
+
 module.exports = router;
