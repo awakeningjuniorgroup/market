@@ -20,7 +20,7 @@ export const updateOrderStatus = createAsyncThunk(
   async ({ id, status }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/api/admin/orders/${id}`, { status });
-      return response.data; // ✅ backend renvoie l’ordre complet
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to update order" });
     }
@@ -33,7 +33,7 @@ export const deleteOrder = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       const response = await api.delete(`/api/admin/orders/${id}`);
-      return response.data.id; // ✅ backend renvoie { message, id }
+      return response.data.id;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to delete order" });
     }
@@ -48,6 +48,8 @@ const adminOrderSlice = createSlice({
     totalSales: 0,
     loading: false,
     error: null,
+    updating: false,
+    deleting: false,
   },
   reducers: {},
   extraReducers: (builder) => {
@@ -59,9 +61,7 @@ const adminOrderSlice = createSlice({
       })
       .addCase(fetchAllOrders.fulfilled, (state, action) => {
         state.loading = false;
-        const orders = Array.isArray(action.payload.orders)
-          ? action.payload.orders
-          : [];
+        const orders = Array.isArray(action.payload.orders) ? action.payload.orders : [];
         state.orders = orders;
         state.totalOrders = orders.length;
         state.totalSales = orders.reduce((acc, order) => acc + (order.totalPrice || 0), 0);
@@ -72,24 +72,36 @@ const adminOrderSlice = createSlice({
       })
 
       // update order status
+      .addCase(updateOrderStatus.pending, (state) => {
+        state.updating = true;
+        state.error = null;
+      })
       .addCase(updateOrderStatus.fulfilled, (state, action) => {
+        state.updating = false;
         const updatedOrder = action.payload;
         const orderIndex = state.orders.findIndex((order) => order._id === updatedOrder._id);
         if (orderIndex !== -1) {
-          state.orders[orderIndex] = updatedOrder; // ✅ remplace la commande
+          state.orders[orderIndex] = updatedOrder;
         }
       })
       .addCase(updateOrderStatus.rejected, (state, action) => {
+        state.updating = false;
         state.error = action.payload?.message || "Failed to update order";
       })
 
       // delete order
+      .addCase(deleteOrder.pending, (state) => {
+        state.deleting = true;
+        state.error = null;
+      })
       .addCase(deleteOrder.fulfilled, (state, action) => {
+        state.deleting = false;
         state.orders = state.orders.filter((order) => order._id !== action.payload);
         state.totalOrders = state.orders.length;
         state.totalSales = state.orders.reduce((acc, order) => acc + (order.totalPrice || 0), 0);
       })
       .addCase(deleteOrder.rejected, (state, action) => {
+        state.deleting = false;
         state.error = action.payload?.message || "Failed to delete order";
       });
   },
