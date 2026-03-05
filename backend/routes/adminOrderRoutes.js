@@ -15,10 +15,17 @@ router.get("/", protect, isAdmin, async (req, res) => {
       .populate("user", "name email")
       .sort({ createdAt: -1 });
 
+    const formattedOrders = orders.map(order => ({
+      ...order.toObject(),
+      owner: order.user
+        ? { type: "user", id: order.user._id, name: order.user.name, email: order.user.email }
+        : { type: "guest", id: order.guestId }
+    }));
+
     res.json({
-      orders,
-      totalOrders: orders.length,
-      totalSales: orders.reduce((acc, order) => acc + (order.totalPrice || 0), 0),
+      orders: formattedOrders,
+      totalOrders: formattedOrders.length,
+      totalSales: formattedOrders.reduce((acc, order) => acc + (order.totalPrice || 0), 0),
     });
   } catch (error) {
     console.error("❌ Erreur GET /api/admin/orders:", error.message);
@@ -58,7 +65,6 @@ router.put("/:id", protect, isAdmin, async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Mettre à jour le statut
     order.status = req.body.status || order.status;
 
     if (req.body.status === "Delivered") {
@@ -94,18 +100,18 @@ router.delete("/:id", protect, isAdmin, async (req, res) => {
   }
 });
 
-
 /**
  * @route POST /api/orders
- * @desc Create a new order
- * @access Private (user must be logged in or guest logic)
+ * @desc Create a new order (user or guest)
+ * @access Public (guest) / Private (user)
  */
-router.post("/", protect, async (req, res) => {
+router.post("/", async (req, res) => {
   console.log("📦 [createOrder] Body reçu:", req.body);
 
   try {
     const order = new Order({
       user: req.user?._id || null, // si utilisateur connecté
+      guestId: !req.user ? req.body.guestId : null, // si invité
       orderItems: req.body.orderItems,
       shippingAddress: req.body.shippingAddress,
       paymentMethod: req.body.paymentMethod,
@@ -121,9 +127,5 @@ router.post("/", protect, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
-
-
-
 
 module.exports = router;
