@@ -1,20 +1,25 @@
 const express = require("express");
-const Order = require("../models/Order"); // ⚠️ Vérifie que ton modèle est bien importé
+const Order = require("../models/Order");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 /**
  * @route POST /api/orders
- * @desc Create a new order
- * @access Private
+ * @desc Create a new order (user or guest)
+ * @access Public (si guest) / Private (si user connecté)
  */
-router.post("/", protect, async (req, res) => {
+router.post("/", async (req, res) => {
   console.log("📦 [createOrder] Body reçu:", req.body);
 
   try {
     const order = new Order({
+      // ✅ si utilisateur connecté, req.user est défini par protect
       user: req.user?._id || null,
+
+      // ✅ si invité, on stocke guestId envoyé par le frontend
+      guestId: !req.user ? req.body.guestId : null,
+
       orderItems: req.body.orderItems,
       shippingAddress: req.body.shippingAddress,
       paymentMethod: req.body.paymentMethod,
@@ -55,7 +60,7 @@ router.get("/my-orders", protect, async (req, res) => {
 /**
  * @route GET /api/orders/:id
  * @desc Get order details by ID
- * @access Private
+ * @access Private (user) / Admin (via admin routes)
  */
 router.get("/:id", protect, async (req, res) => {
   try {
@@ -68,6 +73,7 @@ router.get("/:id", protect, async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
+    // ✅ Vérifie que l’utilisateur connecté est bien propriétaire
     if (order.user && order.user._id.toString() !== req.user._id.toString()) {
       console.warn("⚠️ [orderDetails] User non autorisé:", req.user._id);
       return res.status(403).json({ message: "Not authorized to view this order" });
