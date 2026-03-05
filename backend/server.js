@@ -61,10 +61,17 @@ app.use("/api/admin/orders", adminOrderRoutes);
 const __dirnamePath = path.resolve();
 app.use(express.static(path.join(__dirnamePath, "dist")));
 
-// ✅ Catch-all pour React Router (Express 5 → utiliser regex)
-app.get(/.*/, (req, res) => {
+
+// ✅ Catch-all uniquement pour les routes frontend
+app.get("*", (req, res) => {
+  // Si la requête vise un fichier (ex: .js, .css, .png), ne pas renvoyer index.html
+  if (req.path.match(/\.(js|css|png|jpg|jpeg|gif|svg)$/)) {
+    return res.status(404).end();
+  }
+  // Sinon, renvoyer index.html pour React Router
   res.sendFile(path.resolve(__dirnamePath, "dist", "index.html"));
 });
+
 
 // Lancement du serveur
 app.listen(PORT, () => {
