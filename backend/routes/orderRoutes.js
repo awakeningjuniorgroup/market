@@ -1,8 +1,37 @@
 const express = require("express");
-const Order = require("../models/Order"); // ⚠️ Assure-toi que ce modèle existe bien
+const Order = require("../models/Order"); // ⚠️ Vérifie que ton modèle est bien importé
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
+
+/**
+ * @route POST /api/orders
+ * @desc Create a new order
+ * @access Private
+ */
+router.post("/", protect, async (req, res) => {
+  console.log("📦 [createOrder] Body reçu:", req.body);
+
+  try {
+    const order = new Order({
+      user: req.user?._id || null,
+      orderItems: req.body.orderItems,
+      shippingAddress: req.body.shippingAddress,
+      paymentMethod: req.body.paymentMethod,
+      totalPrice: req.body.totalPrice,
+    });
+
+    console.log("🛠 [createOrder] Order avant save:", order);
+
+    const savedOrder = await order.save();
+    console.log("✅ [createOrder] Order sauvegardé:", savedOrder);
+
+    res.status(201).json(savedOrder);
+  } catch (error) {
+    console.error("❌ [createOrder] Erreur:", error.message);
+    res.status(400).json({ message: error.message });
+  }
+});
 
 /**
  * @route GET /api/orders/my-orders
@@ -11,8 +40,11 @@ const router = express.Router();
  */
 router.get("/my-orders", protect, async (req, res) => {
   try {
-    // Récupérer les commandes de l'utilisateur authentifié
+    console.log("📦 [my-orders] User ID:", req.user._id);
+
     const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+    console.log("✅ [my-orders] Orders trouvées:", orders.length);
+
     res.json(orders);
   } catch (error) {
     console.error("❌ Erreur GET /api/orders/my-orders:", error.message);
@@ -27,17 +59,21 @@ router.get("/my-orders", protect, async (req, res) => {
  */
 router.get("/:id", protect, async (req, res) => {
   try {
+    console.log("📦 [orderDetails] ID reçu:", req.params.id);
+
     const order = await Order.findById(req.params.id).populate("user", "name email");
 
     if (!order) {
+      console.warn("⚠️ [orderDetails] Order introuvable pour ID:", req.params.id);
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // Vérification que l'utilisateur est bien autorisé à voir cette commande
     if (order.user && order.user._id.toString() !== req.user._id.toString()) {
+      console.warn("⚠️ [orderDetails] User non autorisé:", req.user._id);
       return res.status(403).json({ message: "Not authorized to view this order" });
     }
 
+    console.log("✅ [orderDetails] Order trouvé:", order._id);
     res.json(order);
   } catch (error) {
     console.error("❌ Erreur GET /api/orders/:id:", error.message);
