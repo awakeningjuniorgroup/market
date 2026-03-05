@@ -59,4 +59,11 @@ app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
+
+const PORT = process.env.PORT || 9000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
+
 // Global error handler
