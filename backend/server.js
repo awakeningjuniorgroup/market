@@ -3,7 +3,6 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cookieParser = require("cookie-parser");
-const path = require("path");
 
 // Import des routes
 const userRoutes = require("./routes/userRoutes");
