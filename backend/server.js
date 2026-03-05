@@ -62,7 +62,7 @@ const __dirnamePath = path.resolve();
 app.use(express.static(path.join(__dirnamePath, "dist")));
 
 // ✅ Catch-all pour React Router (évite les 404 sur les routes frontend)
-app.get("*", (req, res) => {
+app.get(/.*/, (req, res) => {
   res.sendFile(path.resolve(__dirnamePath, "dist", "index.html"));
 });
 
