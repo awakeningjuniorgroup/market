@@ -37,7 +37,7 @@ app.use(cors({
   credentials: true,
   allowedHeaders: ["Authorization", "Content-Type"],
 }));
-
+const PORT = process.env.PORT || 9000;
 // Test route
 app.get("/", (req, res) => {
   res.send("WELCOME TO RABBIT API!");
@@ -60,7 +60,7 @@ app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
 
-const PORT = process.env.PORT || 9000;
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
