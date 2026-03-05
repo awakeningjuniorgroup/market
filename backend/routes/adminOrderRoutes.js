@@ -6,7 +6,7 @@ const router = express.Router();
 
 /**
  * @route GET /api/admin/orders
- * @desc Get all orders (only admin)
+ * @desc Get all orders (users + guests)
  * @access Private/Admin
  */
 router.get("/", protect, isAdmin, async (req, res) => {
@@ -15,6 +15,7 @@ router.get("/", protect, isAdmin, async (req, res) => {
       .populate("user", "name email")
       .sort({ createdAt: -1 });
 
+    // ✅ formatage pour distinguer user vs guest
     const formattedOrders = orders.map(order => ({
       ...order.toObject(),
       owner: order.user
@@ -46,7 +47,12 @@ router.get("/:id", protect, isAdmin, async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    res.json(order);
+    res.json({
+      ...order.toObject(),
+      owner: order.user
+        ? { type: "user", id: order.user._id, name: order.user.name, email: order.user.email }
+        : { type: "guest", id: order.guestId }
+    });
   } catch (error) {
     console.error("❌ Erreur GET /api/admin/orders/:id:", error.message);
     res.status(500).json({ message: "Server Error", error: error.message });
