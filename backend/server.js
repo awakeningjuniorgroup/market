@@ -37,6 +37,9 @@ app.use("/api/admin/users", require("./routes/adminRoutes"));
 app.use("/api/admin/products", require("./routes/productAdminRoutes"));
 app.use("/api/admin/orders", require("./routes/adminOrderRoutes"));
 
+
+
+app.use((req, res, next) => { if (req.path.endsWith(".js")) { res.type("application/javascript"); } next(); });
 // ✅ Servir le frontend build
 const __dirnamePath = path.resolve();
 app.use(express.static(path.join(__dirnamePath, "dist")));
