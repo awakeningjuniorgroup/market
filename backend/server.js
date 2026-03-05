@@ -40,6 +40,10 @@ connectDB();
 
 // Port
 const PORT = process.env.PORT || 9000;
+// Route de test
+app.get("/", (req, res) => {
+  res.send("WELCOME TO RABBIT API!");
+});
 
 // API Routes publiques
 app.use("/api/users", userRoutes);
@@ -57,14 +61,6 @@ app.use("/api/admin/users", adminUserRoutes);
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 
-// ✅ Servir le frontend build (dist)
-const __dirnamePath = path.resolve();
-app.use(express.static(path.join(__dirnamePath, "dist")));
-
-// ✅ Catch-all pour React Router (évite les 404 sur les routes frontend)
-app.get(/.*/, (req, res) => {
-  res.sendFile(path.resolve(__dirnamePath, "dist", "index.html"));
-});
 
 // Lancement du serveur
 app.listen(PORT, () => {
