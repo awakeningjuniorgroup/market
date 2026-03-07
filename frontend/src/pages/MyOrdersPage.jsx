@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchUserCheckouts } from "../../slice/checkoutSlice"; // ⚠️ vérifie le chemin exact
+import { fetchUserCheckouts, syncOrders } from "../../slice/checkoutSlice"; // ⚠️ vérifie le chemin exact
 
 const MyOrdersPage = () => {
   const navigate = useNavigate();
@@ -10,7 +10,11 @@ const MyOrdersPage = () => {
   const { checkouts, loading, error } = useSelector((state) => state.checkout);
 
   useEffect(() => {
+    // Récupère les checkouts de l'utilisateur
     dispatch(fetchUserCheckouts());
+
+    // Synchronise automatiquement les checkouts en orders
+    dispatch(syncOrders());
   }, [dispatch]);
 
   const handleRowClick = (checkoutId) => {
@@ -22,13 +26,13 @@ const MyOrdersPage = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
-      <h2 className="text-xl sm:text-2xl font-bold mb-6">My Checkouts</h2>
+      <h2 className="text-xl sm:text-2xl font-bold mb-6">My Orders</h2>
       <div className="relative shadow-md sm:rounded-lg overflow-x-auto">
         <table className="min-w-full text-left text-gray-500">
           <thead className="bg-gray-100">
             <tr>
               <th className="py-2 px-4">Image</th>
-              <th className="py-2 px-4">Checkout Id</th>
+              <th className="py-2 px-4">Order Id</th>
               <th className="py-2 px-4">Owner</th>
               <th className="py-2 px-4">Created</th>
               <th className="py-2 px-4">Shipping Address</th>
@@ -98,7 +102,7 @@ const MyOrdersPage = () => {
                   colSpan={9}
                   className="py-4 px-4 text-center text-gray-500"
                 >
-                  You have no checkouts
+                  You have no orders
                 </td>
               </tr>
             )}
