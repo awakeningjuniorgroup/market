@@ -18,13 +18,17 @@ const OrderManagement = () => {
     }
   }, [dispatch, user, navigate]);
 
-  const handleStatusChange = (orderId, status) => {
-    dispatch(updateOrderStatus({ id: orderId, status }));
+  const handleStatusChange = async (orderId, status) => {
+    await dispatch(updateOrderStatus({ id: orderId, status }));
+    // tu peux relancer fetchAllOrders ici si tu veux rafraîchir la liste
+    // await dispatch(fetchAllOrders());
   };
 
-  const handleDelete = (orderId) => {
+  const handleDelete = async (orderId) => {
     if (window.confirm("Are you sure you want to delete this order?")) {
-      dispatch(deleteOrder(orderId));
+      await dispatch(deleteOrder(orderId));
+      // tu peux relancer fetchAllOrders ici aussi
+      // await dispatch(fetchAllOrders());
     }
   };
 
