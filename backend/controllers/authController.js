@@ -26,7 +26,10 @@ exports.login = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user || !(await user.matchPassword(password))) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({
+        type: "INVALID_CREDENTIALS",
+        message: "Email ou mot de passe incorrect."
+      });
     }
 
     const accessToken = generateAccessToken(user);
@@ -50,19 +53,33 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error("Erreur login:", error);
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({
+      type: "SERVER_ERROR",
+      message: "Erreur interne du serveur",
+      error: error.message
+    });
   }
 };
 
 // --- REFRESH ---
 exports.refresh = async (req, res) => {
   const refreshToken = req.cookies?.refreshToken || req.body.refreshToken;
-  if (!refreshToken) return res.status(401).json({ message: "No refresh token" });
+  if (!refreshToken) {
+    return res.status(401).json({
+      type: "NO_REFRESH_TOKEN",
+      message: "Aucun refresh token fourni."
+    });
+  }
 
   try {
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
     const user = await User.findById(decoded.id).select("-password");
-    if (!user) return res.status(401).json({ message: "User not found" });
+    if (!user) {
+      return res.status(401).json({
+        type: "USER_NOT_FOUND",
+        message: "Utilisateur introuvable."
+      });
+    }
 
     const newAccessToken = generateAccessToken(user);
     const newRefreshToken = generateRefreshToken(user);
@@ -79,7 +96,10 @@ exports.refresh = async (req, res) => {
     });
   } catch (err) {
     console.error("Refresh token error:", err.message);
-    return res.status(401).json({ message: "Invalid refresh token" });
+    return res.status(401).json({
+      type: "INVALID_REFRESH_TOKEN",
+      message: "Refresh token invalide ou expiré."
+    });
   }
 };
 
@@ -90,12 +110,18 @@ exports.register = async (req, res) => {
 
     // Validation du mot de passe
     if (!password || password.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters long" });
+      return res.status(400).json({
+        type: "PASSWORD_TOO_SHORT",
+        message: "Le mot de passe doit contenir au moins 6 caractères."
+      });
     }
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        type: "USER_EXISTS",
+        message: "Un utilisateur avec cet email existe déjà."
+      });
     }
 
     const user = await User.create({ name, email, password, role: role || "customer" });
@@ -104,9 +130,16 @@ exports.register = async (req, res) => {
       const refreshToken = generateRefreshToken(user);
       res.json({ user, accessToken, refreshToken });
     } else {
-      res.status(400).json({ message: "Invalid user data" });
+      res.status(400).json({
+        type: "INVALID_USER_DATA",
+        message: "Les données utilisateur sont invalides."
+      });
     }
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({
+      type: "SERVER_ERROR",
+      message: "Erreur interne du serveur",
+      error: error.message
+    });
   }
 };
