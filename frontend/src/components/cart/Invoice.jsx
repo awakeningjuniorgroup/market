@@ -10,25 +10,19 @@ const Invoice = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const { checkouts, checkout, loading, error } = useSelector((state) => state.checkout);
-
-  // ✅ chercher d’abord dans la liste
-  const localCheckout = checkouts?.find((c) => c._id === id);
-  const currentCheckout = localCheckout || checkout;
+  const { checkoutDetails, loading, error } = useSelector((state) => state.checkout);
 
   useEffect(() => {
-    if (!localCheckout) {
-      // si pas trouvé en mémoire, charger depuis l’API
-      dispatch(fetchCheckoutById(id));
-    }
-  }, [dispatch, id, localCheckout]);
+    // Charger la facture par ID
+    dispatch(fetchCheckoutById(id));
+  }, [dispatch, id]);
 
   const now = new Date();
   const date = now.toLocaleDateString();
   const time = now.toLocaleTimeString();
 
   const handleDownload = async () => {
-    if (!currentCheckout) return;
+    if (!checkoutDetails) return;
     const invoiceElement = document.getElementById("invoice-content");
     const canvas = await html2canvas(invoiceElement, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
@@ -54,41 +48,30 @@ const Invoice = () => {
       heightLeft -= pdfHeight;
     }
 
-    pdf.save(`facture-${currentCheckout._id}.pdf`);
+    pdf.save(`facture-${checkoutDetails._id}.pdf`);
   };
 
   if (loading) return <p>Chargement de la facture...</p>;
   if (error) return <p>Erreur : {error}</p>;
-  if (!currentCheckout) return <p>Chargement de la facture...</p>;
+  if (!checkoutDetails) return <p>Facture introuvable</p>;
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded">
       <div id="invoice-content">
         <h2 className="text-2xl font-bold mb-4">Bill</h2>
-        <p><strong>Commande ID :</strong> {currentCheckout._id}</p>
-
-        {currentCheckout.owner ? (
-          currentCheckout.owner.type === "user" ? (
-            <p><strong>User ID :</strong> {currentCheckout.owner.id}</p>
-          ) : (
-            <p><strong>Guest ID :</strong> {currentCheckout.owner.id}</p>
-          )
-        ) : (
-          <p><strong>Owner :</strong> inconnu</p>
-        )}
-
+        <p><strong>Commande ID :</strong> {checkoutDetails._id}</p>
         <p><strong>Date :</strong> {date}</p>
         <p><strong>Time :</strong> {time}</p>
 
         <h3 className="text-lg mt-6 mb-2">Coordonnate</h3>
-        <p>Firstname: {currentCheckout.shippingAddress?.firstName}</p>
-        <p>Phone: {currentCheckout.shippingAddress?.phone}</p>
-        <p>Location: {currentCheckout.shippingAddress?.quarter} - {currentCheckout.shippingAddress?.city}</p>
-        <p>Country: {currentCheckout.shippingAddress?.country}</p>
+        <p>Firstname: {checkoutDetails.shippingAddress?.firstName}</p>
+        <p>Phone: {checkoutDetails.shippingAddress?.phone}</p>
+        <p>Location: {checkoutDetails.shippingAddress?.quarter} - {checkoutDetails.shippingAddress?.city}</p>
+        <p>Country: {checkoutDetails.shippingAddress?.country}</p>
 
         <h3 className="text-lg mt-6 mb-2">Products</h3>
         <div className="border-t py-4">
-          {currentCheckout.checkoutItems?.map((item, index) => (
+          {checkoutDetails.checkoutItems?.map((item, index) => (
             <div key={index} className="flex justify-between border-b py-2">
               <span>{item.name} (x{item.quantity})</span>
               <span>{item.price?.toLocaleString()} FCFA</span>
@@ -98,13 +81,13 @@ const Invoice = () => {
 
         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
           <p>Shipping fee</p>
-          <p>{currentCheckout.shippingAddress?.shippingFee?.toLocaleString()} FCFA</p>
+          <p>{checkoutDetails.shippingAddress?.shippingFee?.toLocaleString()} FCFA</p>
         </div>
 
         <div className="flex justify-between items-center text-lg mt-2 border-t pt-4 font-bold">
           <p>Total</p>
           <p>
-            {(currentCheckout.totalPrice + (currentCheckout.shippingAddress?.shippingFee || 0)).toLocaleString()} FCFA
+            {(checkoutDetails.totalPrice + (checkoutDetails.shippingAddress?.shippingFee || 0)).toLocaleString()} FCFA
           </p>
         </div>
 
