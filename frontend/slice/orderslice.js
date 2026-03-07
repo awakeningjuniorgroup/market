@@ -39,17 +39,6 @@ export const fetchOrderDetails = createAsyncThunk(
     }
   }
 );
-export const syncOrders = createAsyncThunk(
-  "orders/syncOrders",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await api.post("/api/orders/sync");
-      return response.data;
-    } catch (error) {
-      return rejectWithValue(error.response?.data || { message: "Failed to sync orders" });
-    }
-  }
-);
 
 
 const orderSlice = createSlice({
