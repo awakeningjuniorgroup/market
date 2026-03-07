@@ -1,19 +1,34 @@
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { QRCodeCanvas } from "qrcode.react";
+import { fetchCheckoutById } from "../../slice/checkoutSlice"; // ⚠️ vérifie le chemin exact
 
 const Invoice = () => {
   const { id } = useParams();
-  const { checkout } = useSelector((state) => state.checkout);
+  const dispatch = useDispatch();
+
+  const { checkouts, checkout, loading, error } = useSelector((state) => state.checkout);
+
+  // ✅ chercher d’abord dans la liste
+  const localCheckout = checkouts?.find((c) => c._id === id);
+  const currentCheckout = localCheckout || checkout;
+
+  useEffect(() => {
+    if (!localCheckout) {
+      // si pas trouvé en mémoire, charger depuis l’API
+      dispatch(fetchCheckoutById(id));
+    }
+  }, [dispatch, id, localCheckout]);
 
   const now = new Date();
   const date = now.toLocaleDateString();
   const time = now.toLocaleTimeString();
 
   const handleDownload = async () => {
-    if (!checkout) return; // ✅ éviter crash si checkout pas chargé
+    if (!currentCheckout) return;
     const invoiceElement = document.getElementById("invoice-content");
     const canvas = await html2canvas(invoiceElement, { scale: 2 });
     const imgData = canvas.toDataURL("image/png");
@@ -39,25 +54,24 @@ const Invoice = () => {
       heightLeft -= pdfHeight;
     }
 
-    pdf.save(`facture-${checkout._id}.pdf`);
+    pdf.save(`facture-${currentCheckout._id}.pdf`);
   };
 
-  if (!checkout) {
-    return <p>Chargement de la facture...</p>; // ✅ affichage temporaire
-  }
+  if (loading) return <p>Chargement de la facture...</p>;
+  if (error) return <p>Erreur : {error}</p>;
+  if (!currentCheckout) return <p>Chargement de la facture...</p>;
 
   return (
     <div className="max-w-3xl mx-auto bg-white p-8 shadow-lg rounded">
       <div id="invoice-content">
         <h2 className="text-2xl font-bold mb-4">Bill</h2>
-        <p><strong>Commande ID :</strong> {checkout._id}</p>
+        <p><strong>Commande ID :</strong> {currentCheckout._id}</p>
 
-        {/* ✅ Affichage du propriétaire */}
-        {checkout.owner ? (
-          checkout.owner.type === "user" ? (
-            <p><strong>User ID :</strong> {checkout.owner.id}</p>
+        {currentCheckout.owner ? (
+          currentCheckout.owner.type === "user" ? (
+            <p><strong>User ID :</strong> {currentCheckout.owner.id}</p>
           ) : (
-            <p><strong>Guest ID :</strong> {checkout.owner.id}</p>
+            <p><strong>Guest ID :</strong> {currentCheckout.owner.id}</p>
           )
         ) : (
           <p><strong>Owner :</strong> inconnu</p>
@@ -67,14 +81,14 @@ const Invoice = () => {
         <p><strong>Time :</strong> {time}</p>
 
         <h3 className="text-lg mt-6 mb-2">Coordonnate</h3>
-        <p>Firstname: {checkout.shippingAddress?.firstName}</p>
-        <p>Phone: {checkout.shippingAddress?.phone}</p>
-        <p>Location: {checkout.shippingAddress?.quarter} - {checkout.shippingAddress?.city}</p>
-        <p>Country: {checkout.shippingAddress?.country}</p>
+        <p>Firstname: {currentCheckout.shippingAddress?.firstName}</p>
+        <p>Phone: {currentCheckout.shippingAddress?.phone}</p>
+        <p>Location: {currentCheckout.shippingAddress?.quarter} - {currentCheckout.shippingAddress?.city}</p>
+        <p>Country: {currentCheckout.shippingAddress?.country}</p>
 
         <h3 className="text-lg mt-6 mb-2">Products</h3>
         <div className="border-t py-4">
-          {checkout.checkoutItems?.map((item, index) => (
+          {currentCheckout.checkoutItems?.map((item, index) => (
             <div key={index} className="flex justify-between border-b py-2">
               <span>{item.name} (x{item.quantity})</span>
               <span>{item.price?.toLocaleString()} FCFA</span>
@@ -84,13 +98,13 @@ const Invoice = () => {
 
         <div className="flex justify-between items-center text-lg mt-4 border-t pt-4">
           <p>Shipping fee</p>
-          <p>{checkout.shippingAddress?.shippingFee?.toLocaleString()} FCFA</p>
+          <p>{currentCheckout.shippingAddress?.shippingFee?.toLocaleString()} FCFA</p>
         </div>
 
         <div className="flex justify-between items-center text-lg mt-2 border-t pt-4 font-bold">
           <p>Total</p>
           <p>
-            {(checkout.totalPrice + (checkout.shippingAddress?.shippingFee || 0)).toLocaleString()} FCFA
+            {(currentCheckout.totalPrice + (currentCheckout.shippingAddress?.shippingFee || 0)).toLocaleString()} FCFA
           </p>
         </div>
 
@@ -114,7 +128,7 @@ const Invoice = () => {
         onClick={handleDownload}
         className="mt-6 w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
       >
-        Download PDF
+        Télécharger la facture en PDF
       </button>
     </div>
   );
