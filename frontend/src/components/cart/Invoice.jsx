@@ -114,7 +114,7 @@ const Invoice = () => {
         onClick={handleDownload}
         className="mt-6 w-full bg-blue-600 text-white py-3 rounded hover:bg-blue-700"
       >
-        Télécharger la facture en PDF
+        Download PDF
       </button>
     </div>
   );
