@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchUserCheckouts } from "../../slice/checkoutSlice"; // ⚠️ checkouts viennent de checkoutSlice
-import { syncOrders } from "../../slice/orderSlice"; // ✅ syncOrders vient de orderSlice
+import { fetchUserCheckouts, syncOrders } from "../../slice/checkoutSlice"; // ✅ corriger le chemin
 
 const MyOrdersPage = () => {
   const navigate = useNavigate();
