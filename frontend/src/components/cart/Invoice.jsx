@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { QRCodeCanvas } from "qrcode.react";
-import { fetchCheckoutById } from "../../slice/checkoutSlice";
+import { fetchCheckoutById } from "../../../slice/checkoutSlice";
 
 const Invoice = () => {
   const { id } = useParams();
