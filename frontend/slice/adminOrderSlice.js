@@ -39,6 +39,18 @@ export const deleteOrder = createAsyncThunk(
     }
   }
 );
+// --- Thunk pour récupérer un order par ID ---
+export const fetchOrderById = createAsyncThunk(
+  "adminOrders/fetchOrderById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get(`/api/orders/${id}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || { message: "Failed to fetch order" });
+    }
+  }
+);
 
 const adminOrderSlice = createSlice({
   name: "adminOrders",
@@ -103,6 +115,19 @@ const adminOrderSlice = createSlice({
       .addCase(deleteOrder.rejected, (state, action) => {
         state.deleting = false;
         state.error = action.payload?.message || "Failed to delete order";
+      })
+     // fetchAllOrders déjà existant
+      .addCase(fetchOrderById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOrderById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.orderDetails = action.payload;
+      })
+      .addCase(fetchOrderById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Erreur lors du fetch";
       });
   },
 });
