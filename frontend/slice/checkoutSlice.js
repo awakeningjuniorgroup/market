@@ -91,7 +91,6 @@ export const fetchCheckoutById = createAsyncThunk(
   }
 );
 
-
 const checkoutSlice = createSlice({
   name: "checkout",
   initialState: {
@@ -127,18 +126,21 @@ const checkoutSlice = createSlice({
       .addCase(fetchUserCheckouts.fulfilled, (state, action) => {
         state.checkouts = action.payload;
       })
-         .addCase(fetchCheckoutById.fulfilled, (state, action) => { 
-      state.loading = false; 
-      state.checkoutDetails = action.payload;
-    })
-
-     .addCase(fetchCheckoutById.pending, (state) => { 
-       state.loading = true; state.error = null; }) 
-      .addCase(fetchCheckoutById.fulfilled, (state, action) => { 
-        state.loading = false; state.checkout = action.payload;
+      .addCase(fetchCheckoutDetails.fulfilled, (state, action) => {
+        state.checkoutDetails = action.payload;
       })
-    .addCase(fetchCheckoutById.rejected, (state, action) => { 
-    state.loading = false; state.error = action.payload?.message || "Failed to fetch checkout"; });
+      .addCase(fetchCheckoutById.pending, (state) => { 
+        state.loading = true; 
+        state.error = null; 
+      }) 
+      .addCase(fetchCheckoutById.fulfilled, (state, action) => { 
+        state.loading = false; 
+        state.checkoutDetails = action.payload;
+      })
+      .addCase(fetchCheckoutById.rejected, (state, action) => { 
+        state.loading = false; 
+        state.error = action.payload?.message || "Failed to fetch checkout"; 
+      });
   },
 });
 
