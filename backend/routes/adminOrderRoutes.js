@@ -12,10 +12,9 @@ const router = express.Router();
 router.get("/", protect, isAdmin, async (req, res) => {
   try {
     const orders = await Order.find({})
-      .populate("user", "name email")
+      .populate("user", "name email") // ✅ pour afficher user.name côté frontend
       .sort({ createdAt: -1 });
 
-    // ✅ formatage pour distinguer user vs guest
     const formattedOrders = orders.map(order => ({
       ...order.toObject(),
       owner: order.user
@@ -41,7 +40,9 @@ router.get("/", protect, isAdmin, async (req, res) => {
  */
 router.get("/:id", protect, isAdmin, async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate("user", "name email");
+    const order = await Order.findById(req.params.id)
+      .populate("user", "name email")
+      .populate("orderItems.product", "name image price");
 
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
@@ -111,7 +112,7 @@ router.delete("/:id", protect, isAdmin, async (req, res) => {
  * @desc Create a new order (user or guest)
  * @access Public (guest) / Private (user)
  */
-router.post("/", async (req, res) => {
+router.post("/", protect, async (req, res) => {
   console.log("📦 [createOrder] Body reçu:", req.body);
 
   try {
