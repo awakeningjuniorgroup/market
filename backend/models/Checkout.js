@@ -20,7 +20,7 @@ const shippingAddressSchema = new mongoose.Schema(
     quarter: { type: String, required: true },
     city: { type: String, required: true },
     country: { type: String, required: true },
-     shippingFee: { type: Number, default: 0 }, 
+    shippingFee: { type: Number, default: 0 },
   },
   { _id: false }
 );
@@ -36,7 +36,14 @@ const checkoutSchema = new mongoose.Schema(
       enum: ["COD", "PayPal", "OrangeMoney"],
       default: "COD",
     },
-    totalPrice: { type: Number, required: true },
+    totalPrice: { type: Number, required: true, min: 0 },
+
+    // 🔎 Ajout pour suivi
+    isPaid: { type: Boolean, default: false },
+    paymentStatus: { type: String, default: "pending" },
+    paidAt: { type: Date },
+    isFinalized: { type: Boolean, default: false },
+    finalizedAt: { type: Date },
   },
   { timestamps: true }
 );
