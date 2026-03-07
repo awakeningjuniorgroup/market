@@ -6,14 +6,63 @@ const router = express.Router();
 // @route GET /api/orders
 // @desc Get all orders (admin only)
 // @access Private/Admin
+
+// ✅ Route admin pour voir toutes les commandes
 router.get("/", protect, isAdmin, async (req, res) => {
   try {
     const orders = await Order.find({})
       .populate("user", "name email")
       .sort({ createdAt: -1 });
-    res.json(orders);
+
+    res.json({
+      orders,
+      totalOrders: orders.length,
+      totalSales: orders.reduce((acc, order) => acc + (order.totalPrice || 0), 0),
+    });
   } catch (error) {
-    console.error("❌ Error fetching orders:", error.message);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
+// ✅ Nouvelle route pour synchroniser les checkouts en orders
+router.post("/sync", protect, async (req, res) => {
+  try {
+    const checkouts = await Checkout.find({ user: req.user._id, isFinalized: false });
+
+    if (!checkouts || checkouts.length === 0) {
+      return res.status(404).json({ message: "Aucun checkout à synchroniser" });
+    }
+
+    const createdOrders = [];
+
+    for (const checkout of checkouts) {
+      const orderData = {
+        user: checkout.user || null,
+        guestId: checkout.guestId || null,
+        orderItems: checkout.checkoutItems, // ✅ correspondance correcte
+        shippingAddress: checkout.shippingAddress,
+        paymentMethod: checkout.paymentMethod,
+        totalPrice: checkout.totalPrice,
+        paymentStatus: checkout.paymentStatus,
+        isPaid: checkout.isPaid,
+        paidAt: checkout.paidAt,
+      };
+
+      const order = new Order(orderData);
+      const savedOrder = await order.save();
+      createdOrders.push(savedOrder);
+
+      checkout.isFinalized = true;
+      checkout.finalizedAt = Date.now();
+      await checkout.save();
+    }
+
+    res.status(201).json({
+      message: "Checkouts synchronisés en Orders",
+      orders: createdOrders,
+    });
+  } catch (error) {
+    console.error("❌ Erreur sync:", error.message);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
