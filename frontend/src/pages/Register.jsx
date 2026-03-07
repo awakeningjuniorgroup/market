@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import register from "../assets/image9.jpeg";
 import { registerUser } from '../../slice/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import Swal from "sweetalert2";
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -22,7 +23,19 @@ const Register = () => {
     dispatch(registerUser({ name, email, password }))
       .unwrap()
       .then(() => {
+        Swal.fire({
+          icon: "success",
+          title: "Compte créé !",
+          text: "Votre inscription a été effectuée avec succès."
+        });
         navigate(redirect);
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Erreur",
+          text: err.message || "Impossible de créer le compte."
+        });
       });
   };
 
