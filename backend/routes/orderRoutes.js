@@ -3,6 +3,20 @@ const Order = require("../models/Order");
 const { protect } = require("../middleware/authMiddleware");
 
 const router = express.Router();
+// @route GET /api/orders
+// @desc Get all orders (admin only)
+// @access Private/Admin
+router.get("/", protect, admin, async (req, res) => {
+  try {
+    const orders = await Order.find({})
+      .populate("user", "name email")
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    console.error("❌ Error fetching orders:", error.message);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
 
 /**
  * @route POST /api/orders
