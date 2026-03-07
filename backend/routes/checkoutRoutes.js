@@ -120,40 +120,47 @@ router.put("/:id/pay", protect, async (req, res) => {
 
 /**
  * @route POST /api/checkout/:id/finalize
- * @desc Finalize checkout and create order
- * 
-**/
-router.post("/:id/finalize", protect, async (req, res) => {
+ * @desc Transformer un checkout en order
+ * @access Private (user) / Public (guest)
+ */
+router.post("/:id/finalize", async (req, res) => {
   try {
     const checkout = await Checkout.findById(req.params.id);
     if (!checkout) {
-      return res.status(404).json({ message: "Checkout not found" });
+      return res.status(404).json({ message: "Checkout introuvable" });
     }
 
-    if (checkout.isFinalized) {
-      return res.status(400).json({ message: "Checkout already finalized" });
-    }
-
-    // Créer une commande à partir du checkout
-    const order = await Order.create({
-      user: checkout.user,
-      orderItems: checkout.checkoutItems,
+    // Créer un Order à partir du Checkout
+    const order = new Order({
+      user: checkout.user || null,
+      guestId: checkout.guestId || null,
+      orderItems: checkout.checkoutItems, // ⚠️ attention au nom du champ
       shippingAddress: checkout.shippingAddress,
       paymentMethod: checkout.paymentMethod,
       totalPrice: checkout.totalPrice,
+      paymentStatus: checkout.paymentStatus,
       isPaid: checkout.isPaid,
       paidAt: checkout.paidAt,
     });
 
+    const savedOrder = await order.save();
+
     // Marquer le checkout comme finalisé
     checkout.isFinalized = true;
+    checkout.finalizedAt = Date.now();
     await checkout.save();
 
-    res.status(201).json(order);
+    res.status(201).json({
+      message: "Checkout transformé en Order",
+      order: savedOrder,
+    });
   } catch (error) {
-    console.error("❌ Error finalizing checkout:", error.message);
+    console.error("❌ Erreur finalize:", error.message);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
+
+
+
 module.exports = router;
 
