@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import login from "../assets/image45.jpeg";
-import { loginUser, mergeCart } from '../../slice/authSlice'; // ⚠️ mergeCart doit être importé si utilisé
+import { loginUser } from '../../slice/authSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import Swal from "sweetalert2";
 
@@ -12,7 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user, guestId, loading, error } = useSelector((state) => state.auth);
+  const { user, loading, error } = useSelector((state) => state.auth);
   const cart = useSelector((state) => state.cart);
 
   // Get redirect parameter
@@ -26,16 +26,9 @@ const Login = () => {
         title: "Bienvenue !",
         text: "Connexion réussie."
       });
-
-      if (cart?.products?.length > 0 && guestId) {
-        dispatch(mergeCart({ guestId, user })).then(() => {
-          navigate(isCheckoutRedirect ? "/checkout" : "/");
-        });
-      } else {
-        navigate(isCheckoutRedirect ? "/checkout" : "/");
-      }
+      navigate(isCheckoutRedirect ? "/checkout" : "/");
     }
-  }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
+  }, [user, navigate, isCheckoutRedirect]);
 
   useEffect(() => {
     if (error) {
