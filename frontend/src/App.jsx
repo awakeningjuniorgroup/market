@@ -21,6 +21,7 @@ import ProtectRoute from "./components/common/ProtectRoute";
 import Invoice from "./components/cart/Invoice";
 import WhatsAppButton from "./components/common/whatsAppButton";//✅ cohérence
 import ScrollToTop from "./components/common/ScrollToTop";
+import Invoice from "./components/cart/Invoice";
 
 import { Provider} from "react-redux";
 import store from "../redux/store"; 
@@ -45,6 +46,7 @@ const App = () => {
             <Route path="order-confirmation" element={<OrderConfirmationPage />} />
             <Route path="order/:id" element={<OrderDetailsPage />} />
             <Route path="my-orders" element={<MyOrdersPage />} />
+            <Route path="/checkout/:id" element={<Invoice />} /> {/* ✅ nouvelle route */}
           </Route>
 
           <Route
