@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchUserCheckouts, syncOrders } from "../../slice/checkoutSlice"; // ✅ corriger le chemin
+import { fetchUserCheckouts, syncOrders } from "../../slice/checkoutSlice";
 
 const MyOrdersPage = () => {
   const navigate = useNavigate();
@@ -10,10 +10,7 @@ const MyOrdersPage = () => {
   const { checkouts, loading, error } = useSelector((state) => state.checkout);
 
   useEffect(() => {
-    // Récupère les checkouts de l'utilisateur
     dispatch(fetchUserCheckouts());
-
-    // Synchronise automatiquement les checkouts en orders
     dispatch(syncOrders());
   }, [dispatch]);
 
@@ -40,6 +37,7 @@ const MyOrdersPage = () => {
               <th className="py-2 px-4">Payment Method</th>
               <th className="py-2 px-4">Price</th>
               <th className="py-2 px-4">Status</th>
+              <th className="py-2 px-4">Details</th> {/* ✅ nouvelle colonne */}
             </tr>
           </thead>
           <tbody>
@@ -47,8 +45,7 @@ const MyOrdersPage = () => {
               checkouts.map((checkout) => (
                 <tr
                   key={checkout._id}
-                  onClick={() => handleRowClick(checkout._id)}
-                  className="border-b hover:bg-gray-50 cursor-pointer"
+                  className="border-b hover:bg-gray-50"
                 >
                   <td className="py-2 px-2">
                     <img
@@ -94,12 +91,20 @@ const MyOrdersPage = () => {
                       {checkout.isPaid ? "Paid" : "Pending"}
                     </span>
                   </td>
+                  <td className="py-2 px-2">
+                    <button
+                      onClick={() => handleRowClick(checkout._id)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
+                    >
+                      Details
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan={9}
+                  colSpan={10}
                   className="py-4 px-4 text-center text-gray-500"
                 >
                   You have no orders
