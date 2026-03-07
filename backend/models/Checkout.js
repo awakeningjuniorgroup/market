@@ -20,6 +20,7 @@ const shippingAddressSchema = new mongoose.Schema(
     quarter: { type: String, required: true },
     city: { type: String, required: true },
     country: { type: String, required: true },
+     shippingFee: { type: Number, default: 0 }, 
   },
   { _id: false }
 );
