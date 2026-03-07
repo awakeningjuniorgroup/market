@@ -1,12 +1,12 @@
 const express = require("express");
 const Order = require("../models/Order");
-const { protect, admin } = require("../middleware/authMiddleware");
+const { protect, isAdmin } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 // @route GET /api/orders
 // @desc Get all orders (admin only)
 // @access Private/Admin
-router.get("/", protect, admin, async (req, res) => {
+router.get("/", protect, isAdmin, async (req, res) => {
   try {
     const orders = await Order.find({})
       .populate("user", "name email")
