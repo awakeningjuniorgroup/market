@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { fetchUserCheckouts, syncOrders } from "../../slice/orderSlice"; // ⚠️ vérifie le chemin exact
-
+import {  syncOrders } from "../../slice/orderSlice";
+import { fetchUserCheckouts } from "../../slice/checkoutSlice";// ⚠️ vérifie le chemin exact
+ 
 const MyOrdersPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
