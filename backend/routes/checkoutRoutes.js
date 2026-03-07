@@ -82,6 +82,30 @@ router.post("/guest", async (req, res) => {
   }
 });
 
+
+
+/**
+ * @route PUT /api/checkout/:id
+ * @desc Mark checkout by id
+ * @access Public
+ */
+router.get("/:id", async (req, res) => {
+  try {
+    const checkout = await Checkout.findById(req.params.id);
+
+    if (!checkout) {
+      return res.status(404).json({ message: "Checkout not found" });
+    }
+
+    res.json(checkout);
+  } catch (error) {
+    console.error("Erreur fetchCheckoutById:", error.message);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
+
+
 /**
  * @route PUT /api/checkout/:id/pay
  * @desc Mark checkout as paid
