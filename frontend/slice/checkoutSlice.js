@@ -79,6 +79,7 @@ export const fetchCheckoutDetails = createAsyncThunk(
   }
 );
 
+// Récupérer un checkout par ID
 export const fetchCheckoutById = createAsyncThunk(
   "checkout/fetchCheckoutById",
   async (id, { rejectWithValue }) => {
