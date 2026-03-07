@@ -20,16 +20,16 @@ const OrderManagement = () => {
 
   const handleStatusChange = async (orderId, status) => {
     await dispatch(updateOrderStatus({ id: orderId, status }));
-    // tu peux relancer fetchAllOrders ici si tu veux rafraîchir la liste
-    // await dispatch(fetchAllOrders());
   };
 
   const handleDelete = async (orderId) => {
     if (window.confirm("Are you sure you want to delete this order?")) {
       await dispatch(deleteOrder(orderId));
-      // tu peux relancer fetchAllOrders ici aussi
-      // await dispatch(fetchAllOrders());
     }
+  };
+
+  const handleDetails = (orderId) => {
+    navigate(`/admin/orders/${orderId}`); // ✅ route vers la facture/détails
   };
 
   if (loading) return <p>Loading...</p>;
@@ -51,6 +51,7 @@ const OrderManagement = () => {
               <th className="py-3 px-4">Total Price</th>
               <th className="py-3 px-4">Status</th>
               <th className="py-3 px-4">Actions</th>
+              <th className="py-3 px-4">Details</th> {/* ✅ nouvelle colonne */}
             </tr>
           </thead>
           <tbody>
@@ -101,11 +102,19 @@ const OrderManagement = () => {
                       Delete
                     </button>
                   </td>
+                  <td className="p-4">
+                    <button
+                      onClick={() => handleDetails(order._id)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    >
+                      Details
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan={9} className="text-center py-4">
+                <td colSpan={10} className="text-center py-4">
                   No orders found.
                 </td>
               </tr>
