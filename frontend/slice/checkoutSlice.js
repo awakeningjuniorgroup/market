@@ -32,7 +32,7 @@ export const finalizeCheckout = createAsyncThunk(
   "checkout/finalizeCheckout",
   async (checkoutId, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/orders/${checkoutId}/finalize`);
+      const response = await api.post(`/api/checkout/${checkoutId}/finalize`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || { message: "Failed to finalize checkout" });
@@ -127,9 +127,11 @@ const checkoutSlice = createSlice({
       .addCase(fetchUserCheckouts.fulfilled, (state, action) => {
         state.checkouts = action.payload;
       })
-      .addCase(fetchCheckoutDetails.fulfilled, (state, action) => {
-        state.checkoutDetails = action.payload;
-      })
+         .addCase(fetchCheckoutById.fulfilled, (state, action) => { 
+      state.loading = false; 
+      state.checkoutDetails = action.payload;
+    })
+
      .addCase(fetchCheckoutById.pending, (state) => { 
        state.loading = true; state.error = null; }) 
       .addCase(fetchCheckoutById.fulfilled, (state, action) => { 
