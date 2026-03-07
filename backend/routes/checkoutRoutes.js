@@ -118,20 +118,25 @@ router.put("/:id/pay", protect, async (req, res) => {
   }
 });
 
+
 /**
  * @route POST /api/checkout/:id/finalize
  * @desc Transformer un checkout en order
- * @access Private (user) / Public (guest)
  */
 router.post("/:id/finalize", async (req, res) => {
+  console.log("📩 [finalize] ID reçu:", req.params.id);
+
   try {
     const checkout = await Checkout.findById(req.params.id);
+    console.log("🔍 [finalize] Checkout trouvé:", checkout);
+
     if (!checkout) {
-      return res.status(404).json({ message: "Checkout introuvable" });
+      console.warn("⚠️ [finalize] Checkout introuvable pour ID:", req.params.id);
+      return res.status(404).json({ message: "Checkout not found" });
     }
 
-    // Créer un Order à partir du Checkout
-    const order = new Order({
+    // Création de l'Order
+    const orderData = {
       user: checkout.user || null,
       guestId: checkout.guestId || null,
       orderItems: checkout.checkoutItems, // ⚠️ attention au nom du champ
@@ -141,26 +146,32 @@ router.post("/:id/finalize", async (req, res) => {
       paymentStatus: checkout.paymentStatus,
       isPaid: checkout.isPaid,
       paidAt: checkout.paidAt,
-    });
+    };
+
+    console.log("🛠 [finalize] Données préparées pour Order:", orderData);
+
+    const order = new Order(orderData);
+    console.log("🛠 [finalize] Instance Order créée:", order);
 
     const savedOrder = await order.save();
+    console.log("✅ [finalize] Order sauvegardé:", savedOrder);
 
-    // Marquer le checkout comme finalisé
+    // Mise à jour du checkout
     checkout.isFinalized = true;
     checkout.finalizedAt = Date.now();
     await checkout.save();
+    console.log("📦 [finalize] Checkout mis à jour:", checkout);
 
     res.status(201).json({
       message: "Checkout transformé en Order",
       order: savedOrder,
     });
   } catch (error) {
-    console.error("❌ Erreur finalize:", error.message);
+    console.error("❌ [finalize] Erreur:", error.message, error.stack);
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
 
-
-
 module.exports = router;
+
 
