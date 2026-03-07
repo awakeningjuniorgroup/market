@@ -117,6 +117,25 @@ router.put("/:id/pay", protect, async (req, res) => {
     res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
+/**
+ * @route GET /api/checkout/my-checkouts
+ * @desc Récupérer tous les checkouts de l’utilisateur connecté
+ * @access Private
+ */
+router.get("/my-checkouts", protect, async (req, res) => {
+  try {
+    console.log("📦 [my-checkouts] User ID:", req.user._id);
+
+    const checkouts = await Checkout.find({ user: req.user._id }).sort({ createdAt: -1 });
+    console.log("✅ [my-checkouts] Checkouts trouvés:", checkouts.length);
+
+    res.json(checkouts);
+  } catch (error) {
+    console.error("❌ Erreur GET /api/checkout/my-checkouts:", error.message);
+    res.status(500).json({ message: "Server Error", error: error.message });
+  }
+});
+
 
 
 /**
