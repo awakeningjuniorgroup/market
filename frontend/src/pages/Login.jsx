@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import login from "../assets/image45.jpeg";
-import { loginUser } from '../../slice/authSlice';
+import { loginUser, mergeCart } from '../../slice/authSlice'; // ⚠️ mergeCart doit être importé si utilisé
 import { useDispatch, useSelector } from 'react-redux';
+import Swal from "sweetalert2";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,7 +12,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { user, guestId, loading } = useSelector((state) => state.auth);
+  const { user, guestId, loading, error } = useSelector((state) => state.auth);
   const cart = useSelector((state) => state.cart);
 
   // Get redirect parameter
@@ -20,6 +21,12 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
+      Swal.fire({
+        icon: "success",
+        title: "Bienvenue !",
+        text: "Connexion réussie."
+      });
+
       if (cart?.products?.length > 0 && guestId) {
         dispatch(mergeCart({ guestId, user })).then(() => {
           navigate(isCheckoutRedirect ? "/checkout" : "/");
@@ -30,9 +37,27 @@ const Login = () => {
     }
   }, [user, guestId, cart, navigate, isCheckoutRedirect, dispatch]);
 
+  useEffect(() => {
+    if (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Erreur",
+        text: error.message || "Email ou mot de passe incorrect."
+      });
+    }
+  }, [error]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    dispatch(loginUser({ email, password }))
+      .unwrap()
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Erreur",
+          text: err.message || "Impossible de se connecter."
+        });
+      });
   };
 
   return (
