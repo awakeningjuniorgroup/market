@@ -4,16 +4,14 @@ import { useEffect } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { QRCodeCanvas } from "qrcode.react";
-import { fetchCheckoutById } from "../../slice/checkoutSlice"; // ⚠️ vérifie le chemin exact
+import { fetchCheckoutById } from "../../slice/checkoutSlice";
 
 const Invoice = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
-
   const { checkoutDetails, loading, error } = useSelector((state) => state.checkout);
 
   useEffect(() => {
-    // Charger la facture par ID
     dispatch(fetchCheckoutById(id));
   }, [dispatch, id]);
 
