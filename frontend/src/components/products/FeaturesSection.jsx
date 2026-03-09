@@ -14,7 +14,7 @@ const FeaturesSection = () => {
                     
                 </h4>
                 <p className="text-gray-600 text-sm tracking-tighter">
-                   we ship every where in cameroon
+                   we ship everywhere in cameroon
                 </p>
             </div>
 
