@@ -14,7 +14,7 @@ const FeaturesSection = () => {
                     
                 </h4>
                 <p className="text-gray-600 text-sm tracking-tighter">
-                    On all orders over $100.00
+                   we ship every where in cameroon
                 </p>
             </div>
 
